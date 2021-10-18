@@ -11,9 +11,10 @@ galaxy_info:
         - all
     - name: Ubuntu
       versions:
-        - precise
-        - trusty
-        - xenial
+        - focal
+    - name: Centos
+      versions:
+        - 8
   galaxy_tags:
     - zsh
     - ohmyzsh
