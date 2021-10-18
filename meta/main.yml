@@ -1,10 +1,10 @@
 galaxy_info:
+  role_name: zsh
   author: jahrik
   description: Install zsh, oh-my-zsh, and configs
   company: https://homelab.business
   license: GPLv2
   min_ansible_version: 2.1
-  galaxy_tags: []
   platforms:
     - name: Arch
       versions:
@@ -16,4 +16,4 @@ galaxy_info:
         - xenial
   galaxy_tags:
     - zsh
-    - oh-my-zsh
+    - ohmyzsh
