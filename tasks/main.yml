@@ -1,2 +1,69 @@
 ---
-# tasks file for jahrik.zsh
+- name: Update Repository cache when Ubuntu
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+    force_apt_get: true
+  when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'Ubuntu'
+
+- name: install zsh and dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - zsh
+  tags: [ 'zsh' ]
+
+- name: use oh-my-zsh
+  become: false
+  git:
+    repo: "https://github.com/robbyrussell/oh-my-zsh.git"
+    dest: "~/.oh-my-zsh"
+    version: master
+  tags: [ 'zsh' ]
+
+- name: create ~/.z/ directory
+  become: false
+  file:
+    path: "~/.z"
+    state: directory
+    mode: 0755
+  tags: [ "zsh" ]
+
+- name: generate ~/.z/ files
+  become: false
+  template:
+    src: "{{ item }}.j2"
+    dest: "~/.z/{{ item }}"
+  with_items:
+    - zshrc
+    - zshenv
+    - alias.zsh
+    - export.zsh
+    - functions.zsh
+    - keybindings.zsh
+    - chef.zsh
+    - aws.zsh
+    - python.zsh
+    - ansible.zsh
+  tags: [ 'zsh' ]
+
+- name: link the zshrc and zshenv
+  become: false
+  file:
+    src: "~/.z/{{ item }}"
+    dest: "~/.{{ item }}"
+    state: link
+    force: yes
+  with_items:
+    - zshrc
+    - zshenv
+  tags: [ 'zsh' ]
+
+- name: change shell from bash to zsh
+  become: false
+  user:
+    name: "{{ lookup('env', 'USER') }}"
+    shell: /bin/zsh
+  tags: [ 'zsh' ]
