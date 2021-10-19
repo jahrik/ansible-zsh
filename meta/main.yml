@@ -6,15 +6,12 @@ galaxy_info:
   license: GPLv2
   min_ansible_version: 2.1
   platforms:
-    - name: Arch
+    - name: ArchLinux
       versions:
         - all
     - name: Ubuntu
       versions:
         - focal
-    - name: Centos
-      versions:
-        - 8
   galaxy_tags:
     - zsh
     - ohmyzsh
