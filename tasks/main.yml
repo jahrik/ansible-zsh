@@ -36,6 +36,7 @@
   template:
     src: "{{ item }}.j2"
     dest: "~/.z/{{ item }}"
+    mode: 0644
   with_items:
     - zshrc
     - zshenv
