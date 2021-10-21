@@ -5,8 +5,7 @@ galaxy_info:
   company: https://homelab.business
   license: GPLv2
   min_ansible_version: 2.1
-  dependencies:
-    - geerlingguy.git
+  dependencies: []
   platforms:
     - name: ArchLinux
       versions:
