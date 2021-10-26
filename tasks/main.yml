@@ -1,20 +1,20 @@
 ---
-- name: Update Repository cache when Ubuntu
+- name: Ensure git installed and update cache when Ubuntu
   apt:
+    name: git
+    state: present
     update_cache: true
     cache_valid_time: 3600
     force_apt_get: true
   when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'Ubuntu'
 
-- name: install zsh and dependencies
+- name: Install zsh
   package:
-    name: "{{ item }}"
+    name: zsh
     state: present
-  with_items:
-    - zsh
   tags: [ 'zsh' ]
 
-- name: use oh-my-zsh
+- name: Git clone oh-my-zsh
   become: false
   git:
     repo: "https://github.com/robbyrussell/oh-my-zsh.git"
@@ -22,7 +22,7 @@
     version: master
   tags: [ 'zsh' ]
 
-- name: create ~/.z/ directory
+- name: Create ~/.z/ directory
   become: false
   file:
     path: "~/.z"
@@ -30,7 +30,7 @@
     mode: 0755
   tags: [ "zsh" ]
 
-- name: generate ~/.z/ files
+- name: Generate ~/.z/ files
   become: false
   template:
     src: "{{ item }}.j2"
@@ -49,7 +49,7 @@
     - ansible.zsh
   tags: [ 'zsh' ]
 
-- name: link the zshrc and zshenv
+- name: Link zshrc and zshenv
   become: false
   file:
     src: "~/.z/{{ item }}"
@@ -61,9 +61,8 @@
     - zshenv
   tags: [ 'zsh' ]
 
-- name: change shell from bash to zsh
-  become: false
+- name: Set user shell to zsh
   user:
-    name: "{{ lookup('env', 'USER') }}"
+    name: "{{ user }}"
     shell: /bin/zsh
   tags: [ 'zsh' ]

@@ -1,4 +1,5 @@
 ---
+user: "{{ lookup('env', 'USER') }}"
 theme: robbyrussell
 editor: vim
 browser: chromium
