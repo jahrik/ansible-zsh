@@ -1,15 +1,14 @@
-ZSH
-=========
+# ZSH
+
+[![CI](https://github.com/jahrik/ansible-zsh/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/jahrik/ansible-zsh/actions/workflows/ci.yml)
 
 Install ZSH, oh-my-zsh, and configure some defaults.
 
-Requirements
-------------
+## Requirements
 
 - git
 
-Role Variables
---------------
+## Role Variables
 
     theme: robbyrussell
     editor: vim
@@ -32,23 +31,19 @@ Role Variables
     python_force_color: 1
     ansible_force_color: 1
 
-Dependencies
-------------
+## Dependencies
 
-Example Playbook
-----------------
+## Example Playbook
 
     - hosts: local
       roles:
          - { role: jahrik.zsh, theme: robbyrussell }
 
-License
--------
+## License
 
 GPLv2
 
-Author Information
-------------------
+## Author Information
 
 jahrik@gmail.com
 
