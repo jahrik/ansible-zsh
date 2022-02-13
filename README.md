@@ -1,6 +1,6 @@
 # ZSH
 
-[![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg?branch=main&event=release)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
+[![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
 
 Install ZSH, oh-my-zsh, and configure some defaults.
 
