@@ -62,6 +62,7 @@
   tags: [ 'zsh' ]
 
 - name: Set user shell to zsh
+  ignore_errors: true
   user:
     name: "{{ user }}"
     shell: /bin/zsh
