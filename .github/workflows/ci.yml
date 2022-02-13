@@ -52,16 +52,9 @@ jobs:
       - molecule
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the codebase
+      - name: checkout
         uses: actions/checkout@v2
-
-      - name: Set up Python 3
-        uses: actions/setup-python@v2
+      - name: galaxy
+        uses: robertdebock/galaxy-action@1.1.0
         with:
-          python-version: '3.x'
-
-      - name: Install Ansible
-        run: pip3 install ansible-base
-
-      - name: Trigger a new import on Galaxy.
-        run: ansible-galaxy role import --api-key ${{ secrets.GALAXY_API_KEY }} $(echo ${{ github.repository }} | cut -d/ -f1) $(echo ${{ github.repository }} | cut -d/ -f2)
+          galaxy_api_key: ${{ secrets.GALAXY_API_KEY }}
