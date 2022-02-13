@@ -14,6 +14,14 @@
     state: present
   tags: [ 'zsh' ]
 
+- name: Create ~/.config/zsh/ directory
+  become: false
+  file:
+    path: "~/.config/zsh"
+    state: directory
+    mode: 0755
+  tags: [ "zsh" ]
+
 - name: Git clone oh-my-zsh
   become: false
   git:
@@ -22,19 +30,11 @@
     version: master
   tags: [ 'zsh' ]
 
-- name: Create ~/.z/ directory
-  become: false
-  file:
-    path: "~/.z"
-    state: directory
-    mode: 0755
-  tags: [ "zsh" ]
-
-- name: Generate ~/.z/ files
+- name: Generate ~/.config/zsh/ files
   become: false
   template:
     src: "{{ item }}.j2"
-    dest: "~/.z/{{ item }}"
+    dest: "~/.config/zsh/{{ item }}"
     mode: 0644
   with_items:
     - zshrc
@@ -52,7 +52,7 @@
 - name: Link zshrc and zshenv
   become: false
   file:
-    src: "~/.z/{{ item }}"
+    src: "~/.config/zsh/{{ item }}"
     dest: "~/.{{ item }}"
     state: link
     force: yes
