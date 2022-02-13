@@ -52,10 +52,9 @@ jobs:
       - molecule
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      - name: galaxy
-        uses: robertdebock/galaxy-action@1.1.0
+      - name: Release Ansible Role to Galaxy
+        uses: hspaans/ansible-galaxy-action@v1
         with:
-          galaxy_api_key: ${{ secrets.GALAXY_API_KEY }}
-          github_repository: ${{ github.repository }}
+          api_key: ${{ secrets.GALAXY_API_KEY }}
