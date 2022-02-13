@@ -36,11 +36,12 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install test dependencies
-        run: pip3 install ansible molecule[docker] docker
-
-      - name: Run Molecule tests
-        run: molecule test
+      - name: Molecule
+        uses: gofrolist/molecule-action@v2
+        with:
+          molecule_command: test
+          molecule_args: -d docker
+          # molecule_working_dir: ./
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
