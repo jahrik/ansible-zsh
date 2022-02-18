@@ -1,16 +1,19 @@
 ---
 - name: Update cache when Ubuntu
+  become: true
   apt:
     update_cache: true
     cache_valid_time: 3600
   when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'Ubuntu'
 
 - name: Ensure git installed
+  become: true
   package:
     name: git
     state: present
 
 - name: Install zsh
+  become: true
   package:
     name: zsh
     state: present
