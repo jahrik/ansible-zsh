@@ -35,6 +35,9 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Install dependencies
+        run: pip3 install molecule molecule-docker
+
       - name: Molecule
         uses: gofrolist/molecule-action@v2
         with:
