@@ -17,7 +17,7 @@
   package:
     name: zsh
     state: present
-  tags: [ 'zsh' ]
+  tags: ["zsh"]
 
 - name: Create ~/.config/zsh/ directory
   become: false
@@ -25,7 +25,7 @@
     path: "~/.config/zsh"
     state: directory
     mode: 0755
-  tags: [ "zsh" ]
+  tags: ["zsh"]
 
 - name: Git clone oh-my-zsh
   become: false
@@ -33,7 +33,7 @@
     repo: "https://github.com/robbyrussell/oh-my-zsh.git"
     dest: "~/.config/zsh/oh-my-zsh"
     version: master
-  tags: [ 'zsh' ]
+  tags: ["zsh"]
 
 - name: Generate ~/.config/zsh/ files
   become: false
@@ -52,7 +52,7 @@
     - aws.zsh
     - python.zsh
     - ansible.zsh
-  tags: [ 'zsh' ]
+  tags: ["zsh"]
 
 - name: Link zshrc and zshenv
   become: false
@@ -64,11 +64,11 @@
   with_items:
     - zshrc
     - zshenv
-  tags: [ 'zsh' ]
+  tags: ["zsh"]
 
 - name: Set user shell to zsh
   ignore_errors: true
   user:
     name: "{{ user }}"
     shell: /bin/zsh
-  tags: [ 'zsh' ]
+  tags: ["zsh"]
