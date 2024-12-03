@@ -1,27 +1,27 @@
 ---
 - name: Update cache when Ubuntu
   become: true
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
   when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'Ubuntu'
 
 - name: Ensure git installed
   become: true
-  package:
+  ansible.builtin.package:
     name: git
     state: present
 
 - name: Install zsh
   become: true
-  package:
+  ansible.builtin.package:
     name: zsh
     state: present
   tags: ["zsh"]
 
 - name: Create ~/.config/zsh/ directory
   become: false
-  file:
+  ansible.builtin.file:
     path: "~/.config/zsh"
     state: directory
     mode: 0755
@@ -29,7 +29,7 @@
 
 - name: Git clone oh-my-zsh
   become: false
-  git:
+  ansible.builtin.git:
     repo: "https://github.com/robbyrussell/oh-my-zsh.git"
     dest: "~/.config/zsh/oh-my-zsh"
     version: master
@@ -37,7 +37,7 @@
 
 - name: Generate ~/.config/zsh/ files
   become: false
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "~/.config/zsh/{{ item }}"
     mode: 0644
@@ -56,7 +56,7 @@
 
 - name: Link zshrc and zshenv
   become: false
-  file:
+  ansible.builtin.file:
     src: "~/.config/zsh/{{ item }}"
     dest: "~/.{{ item }}"
     state: link
@@ -68,7 +68,7 @@
 
 - name: Set user shell to zsh
   ignore_errors: true
-  user:
+  ansible.builtin.user:
     name: "{{ user }}"
     shell: /bin/zsh
   tags: ["zsh"]
