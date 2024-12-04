@@ -1,3 +1,3 @@
 collections:
   - name: community.general
-    version: "latest"
+    version: "10.0.0"
