@@ -46,8 +46,10 @@ jobs:
           pip install molecule molecule-docker
 
       - name: Install Galaxy dependencies
-        if: fileExists('requirements.yml')
-        run: ansible-galaxy install -r requirements.yml
+        run: |
+          if [ -f requirements.yml ]; then
+            ansible-galaxy install -r requirements.yml
+          fi
 
       - name: Run Molecule tests
         run: molecule test -d docker
@@ -65,8 +67,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Galaxy dependencies
-        if: fileExists('requirements.yml')
-        run: ansible-galaxy install -r requirements.yml
+        run: |
+          if [ -f requirements.yml ]; then
+            ansible-galaxy install -r requirements.yml
+          fi
 
       - name: Publish Role to Ansible Galaxy
         uses: robertdebock/galaxy-action@1.2.0
