@@ -4,34 +4,41 @@
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
-  when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'Ubuntu'
+  when: ansible_facts['os_family'] == 'Debian'
 
-- name: Ensure git installed
+- name: Update cache when Arch Linux
+  become: true
+  ansible.builtin.pacman:
+    update_cache: true
+  when: ansible_facts['os_family'] == 'Archlinux'
+
+- name: Ensure git is installed
   become: true
   ansible.builtin.package:
     name: git
     state: present
+  tags: ["git"]
 
-- name: Install zsh
+- name: Ensure zsh is installed
   become: true
   ansible.builtin.package:
     name: zsh
     state: present
   tags: ["zsh"]
 
-- name: Create ~/.config/zsh/ directory
+- name: Create ~/.config/zsh directory
   become: false
   ansible.builtin.file:
-    path: "~/.config/zsh"
+    path: "{{ ansible_env.HOME }}/.config/zsh"
     state: directory
     mode: 0755
   tags: ["zsh"]
 
-- name: Git clone oh-my-zsh
+- name: Clone oh-my-zsh
   become: false
   ansible.builtin.git:
     repo: "https://github.com/robbyrussell/oh-my-zsh.git"
-    dest: "~/.config/zsh/oh-my-zsh"
+    dest: "{{ ansible_env.HOME }}/.config/zsh/oh-my-zsh"
     version: master
   tags: ["zsh"]
 
@@ -39,7 +46,7 @@
   become: false
   ansible.builtin.template:
     src: "{{ item }}.j2"
-    dest: "~/.config/zsh/{{ item }}"
+    dest: "{{ ansible_env.HOME }}/.config/zsh/{{ item }}"
     mode: 0644
   with_items:
     - zshrc
@@ -57,8 +64,8 @@
 - name: Link zshrc and zshenv
   become: false
   ansible.builtin.file:
-    src: "~/.config/zsh/{{ item }}"
-    dest: "~/.{{ item }}"
+    src: "{{ ansible_env.HOME }}/.config/zsh/{{ item }}"
+    dest: "{{ ansible_env.HOME }}/.{{ item }}"
     state: link
     force: yes
   with_items:
@@ -68,7 +75,8 @@
 
 - name: Set user shell to zsh
   ignore_errors: true
+  become: true
   ansible.builtin.user:
-    name: "{{ user }}"
+    name: "{{ ansible_user }}"
     shell: /bin/zsh
   tags: ["zsh"]

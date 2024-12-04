@@ -1,61 +1,70 @@
 ---
-name: CICD
+name: CI/CD
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint Codebase
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase
-        uses: actions/checkout@v2
-      - name: Set up Python 3
-        uses: actions/setup-python@v2
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: "3.x"
-      - name: Install test dependencies
-        run: pip3 install yamllint
-      - name: Lint code
+
+      - name: Install linting dependencies
+        run: pip install yamllint
+
+      - name: Lint YAML files
         run: yamllint .
 
   molecule:
-    name: Molecule
+    name: Molecule Tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up Python 3
-        uses: actions/setup-python@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: "3.x"
 
-      - name: Install dependencies
-        run: pip3 install molecule molecule-docker
+      - name: Install Molecule and dependencies
+        run: |
+          pip install molecule molecule-docker
+          ansible-galaxy install -r requirements.yml
 
-      - name: Molecule
-        uses: gofrolist/molecule-action@v2
-        with:
-          molecule_command: test
-          molecule_args: -d docker
+      - name: Run Molecule tests
+        run: molecule test -d docker
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
 
   release:
-    name: Release
+    name: Release to Galaxy
     needs:
       - molecule
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: galaxy
-        uses: robertdebock/galaxy-action@1.1.0
+      - name: Check out the codebase
+        uses: actions/checkout@v3
+
+      - name: Install Galaxy dependencies
+        run: ansible-galaxy install -r requirements.yml
+
+      - name: Publish Role to Ansible Galaxy
+        uses: robertdebock/galaxy-action@1.2.0
         with:
           galaxy_api_key: ${{ secrets.GALAXY_API_KEY }}
