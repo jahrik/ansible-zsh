@@ -8,7 +8,7 @@
 
 - name: Update cache when Arch Linux
   become: true
-  ansible.builtin.pacman:
+  community.general.pacman:
     update_cache: true
   when: ansible_facts['os_family'] == 'Archlinux'
 
