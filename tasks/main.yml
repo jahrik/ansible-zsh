@@ -31,7 +31,7 @@
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.config/zsh"
     state: directory
-    mode: 0755
+    mode: '0755'
   tags: ["zsh"]
 
 - name: Clone oh-my-zsh
@@ -47,8 +47,8 @@
   ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "{{ ansible_env.HOME }}/.config/zsh/{{ item }}"
-    mode: 0644
-  with_items:
+    mode: '0644'
+  loop:
     - zshrc
     - zshenv
     - alias.zsh
@@ -67,8 +67,8 @@
     src: "{{ ansible_env.HOME }}/.config/zsh/{{ item }}"
     dest: "{{ ansible_env.HOME }}/.{{ item }}"
     state: link
-    force: yes
-  with_items:
+    force: true
+  loop:
     - zshrc
     - zshenv
   tags: ["zsh"]
