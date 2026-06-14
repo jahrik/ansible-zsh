@@ -5,11 +5,12 @@ driver:
   name: docker
 platforms:
   - name: ubuntu
-    image: geerlingguy/docker-ubuntu2004-ansible
+    image: geerlingguy/docker-ubuntu2404-ansible
     pre_build_image: true
   - name: arch
     image: jahrik/docker-archlinux-ansible
     pre_build_image: true
+    pull: true
 provisioner:
   name: ansible
   inventory:
