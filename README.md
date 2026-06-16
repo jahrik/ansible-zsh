@@ -1,18 +1,19 @@
-# ZSH
+# ansible-zsh
 
 [![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
 
-Install Zsh and configure a high-performance, dependency-free setup using
-[Powerlevel10k](https://github.com/romkatv/powerlevel10k) and a bundled
-[Nerd Font](https://github.com/ryanoasis/nerd-fonts). No Oh My Zsh required.
+Installs [Zsh](https://www.zsh.org/) and deploys a modular configuration to `~/.config/zsh/`. Sets up [Powerlevel10k](https://github.com/romkatv/powerlevel10k) for the prompt, configures shell environment variables, aliases, and keybindings, and installs [DejaVu Sans Mono Nerd Font](https://github.com/ryanoasis/nerd-fonts) for icon support. Does not rely on Oh My Zsh.
 
-## Features
+## OS Support
 
-- **Blazing Fast:** Uses Powerlevel10k with instant-prompt for near-zero startup lag.
-- **Steam Deck Ready:** Installs via home-dir extraction to bypass SteamOS read-only protection.
-- **Clean Home:** All configuration lives in `~/.config/zsh/` (via `ZDOTDIR`).
-- **Powerline Support:** Fully themed prompt with Git status, background jobs, and more.
-- **User Extensible:** Simple hook for local, untracked secrets and overrides.
+| Platform | Install method |
+|---|---|
+| Arch Linux | `pacman` |
+| Ubuntu / Debian | `apt` |
+| macOS | Homebrew (`become: false` throughout) |
+| Steam Deck / SteamOS | Extracted binaries to `~/.local/` |
+
+Steam Deck is detected automatically via `/etc/steamos-release`. Because SteamOS has a read-only root filesystem, all tools are installed to the user's home directory without `sudo`. The latest Zsh version is resolved dynamically via the Arch Linux Package API and extracted directly from the archive.
 
 ## Config Structure
 
@@ -30,60 +31,29 @@ Install Zsh and configure a high-performance, dependency-free setup using
 └── local.zsh             # [Optional] Untracked machine-specific overrides
 ```
 
-## OS Support
-
-| OS Family | Distribution | Method |
-|-----------|--------------|--------|
-| Archlinux | Arch Linux | `pacman` |
-| Archlinux | SteamOS (Steam Deck) | Arch package extraction to `~/.local` |
-| Debian | Ubuntu (Focal, Jammy, Noble) | `apt` |
-| Debian | Debian | `apt` |
-| Darwin | macOS | Homebrew |
-
-## Steam Deck Notes
-
-On SteamOS, the role installs `zsh` by extracting the official Arch Linux
-package directly into `~/.local`. This avoids the need to disable the
-read-only root partition (`steamos-readonly disable`).
-
-The role dynamically determines the latest `zsh` version using the Arch Linux
-Package API and downloads it from the Arch Linux Archive to ensure stability
-and compatibility.
-
 ## Role Variables
 
-    install: true
-    zsh:
-      terminal: alacritty
-    user: "{{ ansible_facts['user_id'] }}"
-    editor: vim
-    browser: chromium
-    lang: en_US.UTF-8
-    path:
-      - ~/bin
-    python_force_color: 1
-    ansible_force_color: 1
+```yaml
+install: true
+zsh:
+  terminal: alacritty
+user: "{{ ansible_facts['user_id'] }}"
+editor: vim
+browser: chromium
+lang: en_US.UTF-8
+path:
+  - ~/bin
+python_force_color: 1
+ansible_force_color: 1
+```
 
-## Dependencies
+## Secrets and Local Overrides
 
-## Secrets and local overrides
+This role does not template secrets. To set machine-specific environment variables (API keys, tokens, etc.), create `~/.config/zsh/local.zsh` manually. It is automatically sourced from `.zshrc` if present, and is ignored by git.
 
-This role never templates secrets. To set machine-specific environment
-variables (API keys, tokens, etc.), create `~/.config/zsh/local.zsh` by hand
-on that machine — it's sourced automatically from `zshrc` if present, and is
-git-ignored so it's never accidentally committed.
+## Setting the Default Shell
 
-## Example Playbook
-
-    - hosts: local
-      roles:
-         - { role: jahrik.zsh }
-
-## Setting the default shell
-
-This role installs and configures Zsh but does **not** change your default login shell automatically (to avoid requiring `sudo` or making system-wide changes without consent).
-
-To make Zsh your default shell:
+This role installs and configures Zsh but does not change the system's default login shell automatically.
 
 ### Linux / macOS
 Run the following command and enter your password when prompted:
@@ -96,7 +66,7 @@ sudo chsh -s $(which zsh) $USER
 ```
 
 ### Steam Deck (SteamOS)
-While you can use `usermod`, the safest way on SteamOS (which survives system updates) is to let `bash` automatically switch to `zsh`. This role adds the following block to your `~/.bashrc` automatically for you:
+The safest approach on SteamOS is to let `bash` automatically switch to `zsh`, as this survives system updates without requiring changes to `/etc/passwd`. The role automatically adds the following block to your `~/.bashrc`:
 
 ```bash
 if [ -f ~/.local/bin/zsh ]; then
@@ -107,25 +77,23 @@ fi
 
 ## Testing
 
-This role uses [uv](https://docs.astral.sh/uv/) to manage its testing environment and [Molecule](https://molecule.readthedocs.io/) for verification.
+Testing is managed with [uv](https://docs.astral.sh/uv/) and [Molecule](https://molecule.readthedocs.io/).
 
 ```bash
-# Install dependencies
 uv sync
+uv run molecule test               # Default scenario (Ubuntu, Arch)
+uv run molecule test -s steamdeck  # SteamOS simulation
+uv run molecule test -s localhost  # Local machine (macOS CI runner)
+```
 
-# Run all tests
-uv run molecule test --all
+## Example Playbook
 
-# Run specific scenario
-uv run molecule test -s steamdeck
+```yaml
+- hosts: local
+  roles:
+    - { role: jahrik.zsh }
 ```
 
 ## License
 
 GPLv2
-
-## Author Information
-
-jahrik@gmail.com
-
-https://homelab.business/
