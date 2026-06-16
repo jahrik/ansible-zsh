@@ -23,6 +23,9 @@ source $ZMOD/prompt.zsh
 # Ansible
 source $ZMOD/ansible.zsh
 
+# Local overrides (secrets, machine-specific env vars) - not managed by Ansible
+[[ -f $ZMOD/local.zsh ]] && source $ZMOD/local.zsh
+
 # vi keys enable
 function zle-line-init zle-keymap-select {
     VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]%  %{$reset_color%}"

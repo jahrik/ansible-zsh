@@ -21,6 +21,7 @@ Installs [Zsh](https://www.zsh.org/) and deploys a minimal, dependency-free shel
 
 - `tasks/main.yml` — updates package cache, installs git + zsh, creates `~/.config/zsh`, installs fontconfig/unzip and a Nerd Font into `~/.local/share/fonts` (triggers the `Fc-cache` handler), templates all config files, symlinks `~/.zshrc`/`~/.zshenv`, sets default shell
 - `templates/prompt.zsh.j2` — builds `PROMPT` from `vcs_info` directly; no oh-my-zsh or other prompt framework
+- `templates/zshrc.j2` sources `~/.config/zsh/local.zsh` if it exists — this role never templates secrets; that file is created by hand per-machine and is git-ignored (see `.gitignore`)
 
 ## Testing Commands
 

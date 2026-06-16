@@ -25,6 +25,13 @@ git branch segments) using a bundled Nerd Font — no oh-my-zsh.
 
 ## Dependencies
 
+## Secrets and local overrides
+
+This role never templates secrets. To set machine-specific environment
+variables (API keys, tokens, etc.), create `~/.config/zsh/local.zsh` by hand
+on that machine — it's sourced automatically from `zshrc` if present, and is
+git-ignored so it's never accidentally committed.
+
 ## Example Playbook
 
     - hosts: local
