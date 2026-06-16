@@ -76,6 +76,8 @@ jobs:
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v5
+        with:
+          path: jahrik.zsh
 
       - name: Set up Python 3
         uses: actions/setup-python@v6
@@ -83,23 +85,22 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip3 install ansible molecule community.general
+        run: pip3 install ansible
 
-      - name: Molecule Converge
-        run: molecule converge -s localhost
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          ANSIBLE_ROLES_PATH: ../
+      - name: Install collections
+        run: ansible-galaxy collection install community.general
 
-      - name: Molecule Verify
-        run: molecule verify -s localhost
+      - name: Run converge
+        working-directory: jahrik.zsh
         env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          ANSIBLE_ROLES_PATH: ../
+          ANSIBLE_ROLES_PATH: ${{ github.workspace }}
+        run: ansible-playbook molecule/localhost/converge.yml -i "localhost," -c local
+
+      - name: Run verify
+        working-directory: jahrik.zsh
+        env:
+          ANSIBLE_ROLES_PATH: ${{ github.workspace }}
+        run: ansible-playbook molecule/localhost/verify.yml -i "localhost," -c local
 
   release:
     name: Release
