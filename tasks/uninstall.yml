@@ -21,6 +21,7 @@
 
 - name: Uninstall (SteamOS)
   become: false
+  when: steamos_release.stat.exists
   block:
     - name: Remove zsh switch from .bashrc (SteamOS)
       ansible.builtin.blockinfile:
@@ -37,7 +38,6 @@
         - ~/.local/lib/zsh
         - ~/.local/share/zsh
         - ~/.local/share/zsh/powerlevel10k
-  when: steamos_release.stat.exists
 
 - name: Remove Powerlevel10k (non-SteamOS)
   become: false
