@@ -59,6 +59,32 @@ git-ignored so it's never accidentally committed.
       roles:
          - { role: jahrik.zsh }
 
+## Setting the default shell
+
+This role installs and configures Zsh but does **not** change your default login shell automatically (to avoid requiring `sudo` or making system-wide changes without consent).
+
+To make Zsh your default shell:
+
+### Linux / macOS
+Run the following command and enter your password when prompted:
+```bash
+# On Linux (with Zsh in /usr/bin/zsh)
+sudo usermod -s /usr/bin/zsh $USER
+
+# On macOS (with Homebrew Zsh)
+sudo chsh -s $(which zsh) $USER
+```
+
+### Steam Deck (SteamOS)
+While you can use `usermod`, the safest way on SteamOS (which survives system updates) is to let `bash` automatically switch to `zsh`. This role adds the following block to your `~/.bashrc` automatically for you:
+
+```bash
+if [ -f ~/.local/bin/zsh ]; then
+  export SHELL=~/.local/bin/zsh
+  exec ~/.local/bin/zsh -l
+fi
+```
+
 ## Testing
 
 This role uses [uv](https://docs.astral.sh/uv/) to manage its testing environment and [Molecule](https://molecule.readthedocs.io/) for verification.

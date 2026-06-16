@@ -77,10 +77,3 @@
     - zshrc
     - zshenv
   tags: ["zsh"]
-
-- name: Set user shell to zsh
-  become: true
-  ansible.builtin.user:
-    name: "{{ user }}"
-    shell: "{{ zsh_shell_path }}"
-  tags: ["zsh"]
