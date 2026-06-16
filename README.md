@@ -2,7 +2,9 @@
 
 [![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
 
-Install ZSH, oh-my-zsh, and configure some defaults.
+Install zsh and configure a minimal, dependency-free setup: aliases, exports,
+key bindings, functions, and a native powerline-style prompt (directory +
+git branch segments) using a bundled Nerd Font — no oh-my-zsh.
 
 ## Requirements
 
@@ -10,24 +12,14 @@ Install ZSH, oh-my-zsh, and configure some defaults.
 
 ## Role Variables
 
-    theme: robbyrussell
+    zsh:
+      terminal: alacritty
+    user: "{{ ansible_facts['user_id'] }}"
     editor: vim
     browser: chromium
     lang: en_US.UTF-8
-    term: rxvt
     path:
       - ~/bin
-    plugins:
-      - sudo
-      - git
-    aws:
-      access_key_id:
-      secret_access_key:
-    chef:
-      user:
-      url:
-      repo:
-      log_level:
     python_force_color: 1
     ansible_force_color: 1
 
@@ -37,7 +29,7 @@ Install ZSH, oh-my-zsh, and configure some defaults.
 
     - hosts: local
       roles:
-         - { role: jahrik.zsh, theme: robbyrussell }
+         - { role: jahrik.zsh }
 
 ## License
 

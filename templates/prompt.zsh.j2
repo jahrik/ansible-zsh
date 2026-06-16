@@ -1,0 +1,27 @@
+#!/usr/bin/zsh
+
+# Powerline-style prompt (dir segment + git segment), no theme framework needed.
+# Requires a Nerd Font for the separator/branch glyphs (this role installs one).
+autoload -Uz vcs_info
+setopt prompt_subst
+
+local powerline_sep=$''
+local powerline_branch=$''
+
+zstyle ':vcs_info:git:*' formats ' %b'
+zstyle ':vcs_info:*' enable git
+
+precmd_vcs_info() { vcs_info }
+precmd_functions+=(precmd_vcs_info)
+
+build_prompt() {
+  local dir_bg="33" git_bg="64"
+  local segment="%K{${dir_bg}}%F{white} %~ %f%k"
+  if [[ -n ${vcs_info_msg_0_} ]]; then
+    segment+="%K{${git_bg}}%F{${dir_bg}}${powerline_sep}%f%F{white} ${powerline_branch}${vcs_info_msg_0_} %f%k%F{${git_bg}}${powerline_sep}%f "
+  else
+    segment+="%F{${dir_bg}}${powerline_sep}%f "
+  fi
+  PROMPT="${segment}"
+}
+precmd_functions+=(build_prompt)

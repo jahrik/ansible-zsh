@@ -34,13 +34,32 @@
     mode: '0755'
   tags: ["zsh"]
 
-- name: Clone oh-my-zsh
+- name: Ensure fontconfig and unzip are installed
+  become: true
+  ansible.builtin.package:
+    name:
+      - fontconfig
+      - unzip
+    state: present
+  tags: ["fonts"]
+
+- name: Create ~/.local/share/fonts directory
   become: false
-  ansible.builtin.git:
-    repo: "https://github.com/robbyrussell/oh-my-zsh.git"
-    dest: "~/.config/zsh/oh-my-zsh"
-    version: master
-  tags: ["zsh"]
+  ansible.builtin.file:
+    path: ~/.local/share/fonts
+    state: directory
+    recurse: true
+  tags: ["fonts"]
+
+- name: Download Nerd Fonts (dejavu-sans-mono-nerdfonts)
+  become: false
+  ansible.builtin.unarchive:
+    src: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/DejaVuSansMono.zip
+    dest: ~/.local/share/fonts
+    remote_src: true
+    creates: '~/.local/share/fonts/DejaVuSansMNerdFontMono-Regular.ttf'
+  notify: Fc-cache
+  tags: ["fonts"]
 
 - name: Generate ~/.config/zsh/ files
   become: false
@@ -55,8 +74,7 @@
     - export.zsh
     - functions.zsh
     - keybindings.zsh
-    - chef.zsh
-    - aws.zsh
+    - prompt.zsh
     - python.zsh
     - ansible.zsh
   tags: ["zsh"]
@@ -74,9 +92,8 @@
   tags: ["zsh"]
 
 - name: Set user shell to zsh
-  ignore_errors: true
   become: true
   ansible.builtin.user:
-    name: "{{ ansible_user }}"
+    name: "{{ user }}"
     shell: /bin/zsh
   tags: ["zsh"]

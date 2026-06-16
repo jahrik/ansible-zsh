@@ -32,3 +32,13 @@
       ansible.builtin.assert:
         that: zshrc.stat.exists
         fail_msg: "~/.zshrc not found"
+
+    - name: Check Nerd Font installed
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.local/share/fonts/DejaVuSansMNerdFontMono-Regular.ttf"
+      register: nerd_font
+
+    - name: Assert Nerd Font is installed
+      ansible.builtin.assert:
+        that: nerd_font.stat.exists
+        fail_msg: "Nerd Font not found at ~/.local/share/fonts"
