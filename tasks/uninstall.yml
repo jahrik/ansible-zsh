@@ -27,13 +27,21 @@
 
 - name: Uninstall (SteamOS)
   become: false
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - ~/.local/bin/zsh
-    - ~/.local/lib/zsh
-    - ~/.local/share/zsh
+  block:
+    - name: Remove zsh switch from .bashrc (SteamOS)
+      ansible.builtin.blockinfile:
+        path: ~/.bashrc
+        marker: "# {mark} ANSIBLE MANAGED BLOCK: zsh-switch"
+        state: absent
+
+    - name: Remove zsh artifacts (SteamOS)
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - ~/.local/bin/zsh
+        - ~/.local/lib/zsh
+        - ~/.local/share/zsh
   when: steamos_release.stat.exists
 
 - name: Uninstall (macOS)
