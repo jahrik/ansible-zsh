@@ -36,7 +36,15 @@
         - ~/.local/bin/zsh
         - ~/.local/lib/zsh
         - ~/.local/share/zsh
+        - ~/.local/share/zsh/powerlevel10k
   when: steamos_release.stat.exists
+
+- name: Remove Powerlevel10k (non-SteamOS)
+  become: false
+  ansible.builtin.file:
+    path: "~/.local/share/zsh/powerlevel10k"
+    state: absent
+  when: not steamos_release.stat.exists
 
 - name: Uninstall (macOS)
   become: false

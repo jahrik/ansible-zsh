@@ -48,20 +48,28 @@
   notify: Fc-cache
   tags: ["fonts"]
 
+- name: Clone Powerlevel10k
+  become: false
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "~/.local/share/zsh/powerlevel10k"
+    depth: 1
+  tags: ["zsh", "theme"]
+
 - name: Generate ~/.config/zsh/ files
   become: false
   ansible.builtin.template:
     src: "{{ item }}.j2"
-    dest: "~/.config/zsh/{{ '.' if item in ['zshrc', 'zshenv'] else '' }}{{ item }}"
+    dest: "~/.config/zsh/{{ '.' if item in ['zshrc', 'zshenv', 'p10k.zsh'] else '' }}{{ item }}"
     mode: '0644'
   loop:
     - zshrc
     - zshenv
+    - p10k.zsh
     - alias.zsh
     - export.zsh
     - functions.zsh
     - keybindings.zsh
-    - prompt.zsh
     - python.zsh
     - ansible.zsh
   tags: ["zsh"]
