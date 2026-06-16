@@ -5,7 +5,7 @@
   register: steamos_release
 
 - name: Install (SteamOS)
-  ansible.builtin.include_tasks: steamos.yml
+  ansible.builtin.include_tasks: steamdeck.yml
   when: steamos_release.stat.exists
 
 - name: Install (Arch Linux)

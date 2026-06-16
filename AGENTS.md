@@ -1,27 +1,56 @@
-# Agent Guide: jahrik.zsh
+# ansible-zsh
 
-Install zsh and configure a minimal, dependency-free setup: aliases, exports,
-key bindings, functions, and the Powerlevel10k prompt using a bundled
-Nerd Font.
+Installs Zsh and deploys a clean, modular configuration using Powerlevel10k
+and Nerd Fonts. Supports Arch Linux, Debian/Ubuntu, macOS, and SteamOS
+(Steam Deck).
 
-## Role Variables
+## Key Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `install` | `true` | Whether to install or uninstall the role. |
+| `install` | `true` | Set to `false` to uninstall and remove all configuration. |
 | `zsh.terminal` | `alacritty` | Terminal emulator to optimize for. |
-| `user` | `ansible_facts['user_id']` | Target user for home-dir configuration. |
-| `editor` | `vim` | Default editor. |
-| `browser` | `chromium` | Default browser. |
-| `lang` | `en_US.UTF-8` | System language. |
-| `path` | `['~/bin']` | List of additional PATH entries. |
+| `user` | `ansible_facts['user_id']` | Target user for configuration. |
 
 ## Task Flow
 
-- `tasks/main.yml`: Thin dispatcher based on `install` variable.
-- `tasks/install.yml`: OS detection and dispatching to OS-specific tasks, followed by shared configuration.
-- `tasks/uninstall.yml`: Removal of configuration and packages (best-effort).
-- OS-specific tasks: `archlinux.yml`, `debian.yml`, `darwin.yml`, `steamos.yml`.
+`tasks/main.yml` -> `install.yml` or `uninstall.yml` based on `install | bool`
+
+**install.yml:**
+1. Detect SteamOS via `/etc/steamos-release`.
+2. Include OS-specific tasks: `steamdeck.yml`, `archlinux.yml`, `debian.yml`, or `darwin.yml`.
+3. Create `~/.local/share/fonts`, download DejaVu Nerd Fonts, notify `Fc-cache`.
+4. Clone Powerlevel10k to `~/.local/share/zsh/powerlevel10k`.
+5. Template modular config files to `~/.config/zsh/`.
+6. Symlink `.zshrc` and `.zshenv` to `$HOME`.
+
+**archlinux.yml:** pacman installs zsh, git, fontconfig, unzip.
+
+**debian.yml:** apt installs zsh, git, fontconfig, unzip.
+
+**darwin.yml:** Homebrew installs zsh, git (`become: false` throughout).
+
+**steamdeck.yml:** All tasks run without `become` (root is read-only).
+- Resolves latest zsh version via Arch Linux Package API.
+- Extracts package from Arch Archive to `~/.local/`.
+- Adds automatic zsh-switch block to `~/.bashrc`.
+
+**uninstall.yml:** Removes Zsh artifacts, configuration, and restores `.bashrc`.
+
+## Config Structure
+
+```
+~/.config/zsh/
+├── .zshrc                # Sources modular files and loads p10k
+├── .zshenv               # Sets ZDOTDIR and module_path
+├── .p10k.zsh             # Powerlevel10k classic style
+├── alias.zsh             # System aliases
+├── ansible.zsh           # Ansible colors and env
+├── export.zsh            # PATH and default apps
+├── functions.zsh         # Shell helpers
+├── keybindings.zsh       # Vim-style bindings
+└── local.zsh             # Untracked user overrides
+```
 
 ## Testing
 

@@ -2,13 +2,33 @@
 
 [![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
 
-Install zsh and configure a minimal, dependency-free setup: aliases, exports,
-key bindings, functions, and the high-performance Powerlevel10k prompt
-using a bundled Nerd Font — no oh-my-zsh.
+Install Zsh and configure a high-performance, dependency-free setup using
+[Powerlevel10k](https://github.com/romkatv/powerlevel10k) and a bundled
+[Nerd Font](https://github.com/ryanoasis/nerd-fonts). No Oh My Zsh required.
 
-## Requirements
+## Features
 
-- git
+- **Blazing Fast:** Uses Powerlevel10k with instant-prompt for near-zero startup lag.
+- **Steam Deck Ready:** Installs via home-dir extraction to bypass SteamOS read-only protection.
+- **Clean Home:** All configuration lives in `~/.config/zsh/` (via `ZDOTDIR`).
+- **Powerline Support:** Fully themed prompt with Git status, background jobs, and more.
+- **User Extensible:** Simple hook for local, untracked secrets and overrides.
+
+## Config Structure
+
+```
+~/.config/zsh/
+├── .zshrc                # Main entry point (sources all other files)
+├── .zshenv               # Environment vars (ZDOTDIR, module_path, PATH)
+├── .p10k.zsh             # Powerlevel10k theme configuration
+├── alias.zsh             # Custom aliases
+├── ansible.zsh           # Ansible-specific tweaks (force color, etc.)
+├── export.zsh            # Environment exports (EDITOR, BROWSER, etc.)
+├── functions.zsh         # Custom shell functions
+├── keybindings.zsh       # Vim-style navigation and search bindings
+├── python.zsh            # Python-specific setup (colors, etc.)
+└── local.zsh             # [Optional] Untracked machine-specific overrides
+```
 
 ## OS Support
 
