@@ -26,16 +26,13 @@ On SteamOS, the role installs `zsh` by extracting the official Arch Linux
 package directly into `~/.local`. This avoids the need to disable the
 read-only root partition (`steamos-readonly disable`).
 
-The version is pinned in `defaults/main.yml` via `zsh_steamos_version`. To
-bump it:
-1. Find the latest version on [archive.archlinux.org](https://archive.archlinux.org/packages/z/zsh/).
-2. Update `zsh_steamos_version` in `defaults/main.yml`.
-3. Test the `steamdeck` molecule scenario.
+The role dynamically determines the latest `zsh` version using the Arch Linux
+Package API and downloads it from the Arch Linux Archive to ensure stability
+and compatibility.
 
 ## Role Variables
 
     install: true
-    zsh_steamos_version: "5.9.1-1"
     zsh:
       terminal: alacritty
     user: "{{ ansible_facts['user_id'] }}"
@@ -61,6 +58,21 @@ git-ignored so it's never accidentally committed.
     - hosts: local
       roles:
          - { role: jahrik.zsh }
+
+## Testing
+
+This role uses [uv](https://docs.astral.sh/uv/) to manage its testing environment and [Molecule](https://molecule.readthedocs.io/) for verification.
+
+```bash
+# Install dependencies
+uv sync
+
+# Run all tests
+uv run molecule test --all
+
+# Run specific scenario
+uv run molecule test -s steamdeck
+```
 
 ## License
 

@@ -1,6 +1,5 @@
 ---
 install: true
-zsh_steamos_version: "5.9.1-1"
 zsh:
   terminal: alacritty
 user: "{{ ansible_facts['user_id'] }}"

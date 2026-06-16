@@ -9,7 +9,6 @@ Nerd Font.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `install` | `true` | Whether to install or uninstall the role. |
-| `zsh_steamos_version` | `"5.9.1-1"` | Pinned Arch package version for SteamOS extraction. |
 | `zsh.terminal` | `alacritty` | Terminal emulator to optimize for. |
 | `user` | `ansible_facts['user_id']` | Target user for home-dir configuration. |
 | `editor` | `vim` | Default editor. |
@@ -28,12 +27,13 @@ Nerd Font.
 
 Local linting:
 ```bash
-yamllint .
-ansible-lint
+uv run yamllint .
+uv run ansible-lint
 ```
 
 Molecule testing:
 ```bash
-molecule test               # Default scenario (Ubuntu, Arch)
-molecule test -s steamdeck  # SteamOS simulation
+uv run molecule test               # Default scenario (Ubuntu, Arch)
+uv run molecule test -s steamdeck  # SteamOS simulation
+uv run molecule test -s localhost  # Local machine (macOS/SteamOS/Linux)
 ```
