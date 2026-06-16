@@ -1,37 +1,68 @@
-# AGENTS.md
+# ansible-zsh
 
-This file provides guidance to AI coding agents when working with code in this repository.
-
-## Role Overview
-
-Installs [Zsh](https://www.zsh.org/) with [Oh My Zsh](https://ohmyz.sh/) and deploys a fully configured shell environment to `~/.config/zsh/`. Symlinks `~/.zshrc` and `~/.zshenv` to the config directory. Sets zsh as the default user shell.
+Installs Zsh and deploys a clean, modular configuration using Powerlevel10k
+and Nerd Fonts. Supports Arch Linux, Debian/Ubuntu, macOS, and SteamOS
+(Steam Deck).
 
 ## Key Variables
 
 | Variable | Default | Description |
-|---|---|---|
-| `theme` | `robbyrussell` | Oh My Zsh theme |
-| `editor` | `vim` | Default `$EDITOR` |
-| `browser` | `chromium` | Default `$BROWSER` |
-| `lang` | `en_US.UTF-8` | Default `$LANG` |
-| `path` | `[~/bin]` | Extra entries for `$PATH` |
-| `plugins` | `[sudo, git]` | Oh My Zsh plugins to load |
-| `user` | `$USER` | User to set shell for |
+|----------|---------|-------------|
+| `install` | `true` | Set to `false` to uninstall and remove all configuration. |
+| `zsh.terminal` | `alacritty` | Terminal emulator to optimize for. |
+| `user` | `ansible_facts['user_id']` | Target user for configuration. |
 
 ## Task Flow
 
-- `tasks/main.yml` — updates package cache, installs git + zsh, creates `~/.config/zsh`, clones Oh My Zsh, templates all config files, symlinks `~/.zshrc`/`~/.zshenv`, sets default shell
+`tasks/main.yml` -> `install.yml` or `uninstall.yml` based on `install | bool`
 
-## Testing Commands
+**install.yml:**
+1. Detect SteamOS via `/etc/steamos-release`.
+2. Include OS-specific tasks: `steamdeck.yml`, `archlinux.yml`, `debian.yml`, or `darwin.yml`.
+3. Create `~/.local/share/fonts`, download DejaVu Nerd Fonts, notify `Fc-cache`.
+4. Clone Powerlevel10k to `~/.local/share/zsh/powerlevel10k`.
+5. Template modular config files to `~/.config/zsh/`.
+6. Symlink `.zshrc` and `.zshenv` to `$HOME`.
 
+**archlinux.yml:** pacman installs zsh, git, fontconfig, unzip.
+
+**debian.yml:** apt installs zsh, git, fontconfig, unzip.
+
+**darwin.yml:** Homebrew installs zsh, git (`become: false` throughout).
+
+**steamdeck.yml:** All tasks run without `become` (root is read-only).
+- Resolves latest zsh version via Arch Linux Package API.
+- Extracts package from Arch Archive to `~/.local/`.
+- Adds automatic zsh-switch block to `~/.bashrc`.
+
+**uninstall.yml:** Removes Zsh artifacts, configuration, and restores `.bashrc`.
+
+## Config Structure
+
+```
+~/.config/zsh/
+├── .zshrc                # Sources modular files and loads p10k
+├── .zshenv               # Sets ZDOTDIR and module_path
+├── .p10k.zsh             # Powerlevel10k classic style
+├── alias.zsh             # System aliases
+├── ansible.zsh           # Ansible colors and env
+├── export.zsh            # PATH and default apps
+├── functions.zsh         # Shell helpers
+├── keybindings.zsh       # Vim-style bindings
+└── local.zsh             # Untracked user overrides
+```
+
+## Testing
+
+Local linting:
 ```bash
-# Lint
-yamllint .
+uv run yamllint .
+uv run ansible-lint
+```
 
-# Full molecule test (Arch container)
-molecule test
-
-# Iterative
-molecule converge
-molecule destroy
+Molecule testing:
+```bash
+uv run molecule test               # Default scenario (Ubuntu, Arch)
+uv run molecule test -s steamdeck  # SteamOS simulation
+uv run molecule test -s localhost  # Local machine (macOS/SteamOS/Linux)
 ```

@@ -1,0 +1,23 @@
+---
+- name: Verify
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Check zsh binary
+      ansible.builtin.command: which zsh
+      register: zsh_bin
+      changed_when: false
+
+    - name: Assert zsh is installed
+      ansible.builtin.assert:
+        that: zsh_bin.rc == 0
+
+    - name: Check zshrc config
+      ansible.builtin.stat:
+        path: ~/.config/zsh/.zshrc
+      register: zshrc_cfg
+
+    - name: Assert zshrc exists
+      ansible.builtin.assert:
+        that: zshrc_cfg.stat.exists

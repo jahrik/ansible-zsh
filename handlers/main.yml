@@ -1,2 +1,8 @@
 ---
 # handlers file for jahrik.zsh
+
+- name: Fc-cache
+  become: false
+  ansible.builtin.command: fc-cache -f ~/.local/share/fonts/
+  changed_when: true
+  failed_when: false

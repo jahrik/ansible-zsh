@@ -1,0 +1,54 @@
+---
+- name: Check if git is present (SteamOS)
+  ansible.builtin.command: which git
+  register: git_check
+  changed_when: false
+  failed_when: false
+
+- name: Assert git is present
+  ansible.builtin.assert:
+    that: git_check.rc == 0
+    fail_msg: "git is not installed on SteamOS. This is unexpected."
+
+- name: Get latest zsh version from Arch API
+  ansible.builtin.uri:
+    url: https://archlinux.org/packages/extra/x86_64/zsh/json/
+    return_content: true
+  register: zsh_api_response
+  check_mode: false
+
+- name: Set zsh version fact
+  ansible.builtin.set_fact:
+    zsh_latest_version: "{{ zsh_api_response.json.pkgver }}-{{ zsh_api_response.json.pkgrel }}"
+
+- name: Ensure ~/.local/bin exists (SteamOS)
+  become: false
+  ansible.builtin.file:
+    path: ~/.local/bin
+    state: directory
+    mode: '0755'
+
+- name: Extract zsh binary (SteamOS)
+  become: false
+  ansible.builtin.unarchive:
+    src: "https://archive.archlinux.org/packages/z/zsh/zsh-{{ zsh_latest_version }}-x86_64.pkg.tar.zst"
+    dest: "~/.local"
+    remote_src: true
+    creates: "~/.local/bin/zsh"
+    extra_opts:
+      - --strip-components=1
+
+- name: Set zsh shell path
+  ansible.builtin.set_fact:
+    zsh_shell_path: "{{ ansible_user_dir }}/.local/bin/zsh"
+
+- name: Add zsh switch to .bashrc (SteamOS)
+  become: false
+  ansible.builtin.blockinfile:
+    path: ~/.bashrc
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: zsh-switch"
+    block: |
+      if [ -f ~/.local/bin/zsh ]; then
+        export SHELL=~/.local/bin/zsh
+        exec ~/.local/bin/zsh -l
+      fi

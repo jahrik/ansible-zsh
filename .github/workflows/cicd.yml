@@ -2,9 +2,9 @@
 name: CICD
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -48,9 +48,63 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
 
+  steamdeck:
+    name: Steam Deck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Molecule
+        uses: gofrolist/molecule-action@v2
+        with:
+          molecule_command: test
+          molecule_args: -d docker -s steamdeck
+          molecule_working_dir: .
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+
+  macos:
+    name: macOS
+    runs-on: macos-latest
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v5
+        with:
+          path: jahrik.zsh
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip3 install ansible
+
+      - name: Install collections
+        run: ansible-galaxy collection install community.general
+
+      - name: Run converge
+        working-directory: jahrik.zsh
+        env:
+          ANSIBLE_ROLES_PATH: ${{ github.workspace }}
+        run: ansible-playbook molecule/localhost/converge.yml -i "localhost," -c local
+
+      - name: Run verify
+        working-directory: jahrik.zsh
+        env:
+          ANSIBLE_ROLES_PATH: ${{ github.workspace }}
+        run: ansible-playbook molecule/localhost/verify.yml -i "localhost," -c local
+
   release:
     name: Release
-    needs: [molecule]
+    needs: [molecule, macos]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:

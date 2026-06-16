@@ -1,0 +1,21 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: steamdeck
+    image: jahrik/docker-archlinux-ansible
+    pre_build_image: true
+    privileged: true
+    security_opts:
+      - seccomp=unconfined
+    pull: true
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      steamdeck:
+        ansible_user: ansible
+verifier:
+  name: ansible

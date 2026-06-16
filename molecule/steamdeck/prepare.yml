@@ -1,0 +1,20 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Fake /etc/steamos-release
+      become: true
+      ansible.builtin.copy:
+        content: "SteamOS"
+        dest: /etc/steamos-release
+        mode: '0644'
+
+    - name: Install curl and unzip (simulate SteamOS)
+      become: true
+      community.general.pacman:
+        name:
+          - curl
+          - unzip
+        state: present
+        update_cache: true
