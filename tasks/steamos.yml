@@ -1,0 +1,32 @@
+---
+- name: Check if git is present (SteamOS)
+  ansible.builtin.command: which git
+  register: git_check
+  changed_when: false
+  failed_when: false
+
+- name: Assert git is present
+  ansible.builtin.assert:
+    that: git_check.rc == 0
+    fail_msg: "git is not installed on SteamOS. This is unexpected."
+
+- name: Ensure ~/.local/bin exists (SteamOS)
+  become: false
+  ansible.builtin.file:
+    path: ~/.local/bin
+    state: directory
+    mode: '0755'
+
+- name: Extract zsh binary (SteamOS)
+  become: false
+  ansible.builtin.unarchive:
+    src: "https://archive.archlinux.org/packages/z/zsh/zsh-{{ zsh_steamos_version }}-x86_64.pkg.tar.zst"
+    dest: "~/.local"
+    remote_src: true
+    creates: "~/.local/bin/zsh"
+    extra_opts:
+      - --strip-components=1
+
+- name: Set zsh shell path
+  ansible.builtin.set_fact:
+    zsh_shell_path: "{{ ansible_user_dir }}/.local/bin/zsh"

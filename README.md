@@ -10,8 +10,32 @@ git branch segments) using a bundled Nerd Font — no oh-my-zsh.
 
 - git
 
+## OS Support
+
+| OS Family | Distribution | Method |
+|-----------|--------------|--------|
+| Archlinux | Arch Linux | `pacman` |
+| Archlinux | SteamOS (Steam Deck) | Arch package extraction to `~/.local` |
+| Debian | Ubuntu (Focal, Jammy, Noble) | `apt` |
+| Debian | Debian | `apt` |
+| Darwin | macOS | Homebrew |
+
+## Steam Deck Notes
+
+On SteamOS, the role installs `zsh` by extracting the official Arch Linux
+package directly into `~/.local`. This avoids the need to disable the
+read-only root partition (`steamos-readonly disable`).
+
+The version is pinned in `defaults/main.yml` via `zsh_steamos_version`. To
+bump it:
+1. Find the latest version on [archive.archlinux.org](https://archive.archlinux.org/packages/z/zsh/).
+2. Update `zsh_steamos_version` in `defaults/main.yml`.
+3. Test the `steamdeck` molecule scenario.
+
 ## Role Variables
 
+    install: true
+    zsh_steamos_version: "5.9.1-1"
     zsh:
       terminal: alacritty
     user: "{{ ansible_facts['user_id'] }}"

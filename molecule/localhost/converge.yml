@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: "Include jahrik.zsh"
+      ansible.builtin.include_role:
+        name: "jahrik.zsh"

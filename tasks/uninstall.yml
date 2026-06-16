@@ -1,0 +1,53 @@
+---
+- name: Detect SteamOS
+  ansible.builtin.stat:
+    path: /etc/steamos-release
+  register: steamos_release
+
+- name: Remove zshrc and zshenv links
+  become: false
+  ansible.builtin.file:
+    path: "~/.{{ item }}"
+    state: absent
+  loop:
+    - zshrc
+    - zshenv
+
+- name: Remove ~/.config/zsh directory
+  become: false
+  ansible.builtin.file:
+    path: "~/.config/zsh"
+    state: absent
+
+- name: Set user shell back to bash
+  become: true
+  ansible.builtin.user:
+    name: "{{ user }}"
+    shell: /bin/bash
+
+- name: Uninstall (SteamOS)
+  become: false
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - ~/.local/bin/zsh
+    - ~/.local/lib/zsh
+    - ~/.local/share/zsh
+  when: steamos_release.stat.exists
+
+- name: Uninstall (macOS)
+  become: false
+  community.general.homebrew:
+    name: zsh
+    state: absent
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Uninstall (Linux)
+  become: true
+  ansible.builtin.package:
+    name: zsh
+    state: absent
+  when:
+    - ansible_facts['os_family'] != 'Darwin'
+    - not steamos_release.stat.exists

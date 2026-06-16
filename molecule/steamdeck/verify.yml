@@ -1,0 +1,42 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check zsh binary
+      ansible.builtin.stat:
+        path: ~/.local/bin/zsh
+      register: zsh_bin
+
+    - name: Assert zsh is installed in ~/.local/bin
+      ansible.builtin.assert:
+        that: zsh_bin.stat.exists
+
+    - name: Check zshrc config
+      ansible.builtin.stat:
+        path: ~/.config/zsh/zshrc
+      register: zshrc_cfg
+
+    - name: Assert zshrc exists
+      ansible.builtin.assert:
+        that: zshrc_cfg.stat.exists
+
+    - name: Check zshrc symlink
+      ansible.builtin.stat:
+        path: ~/.zshrc
+      register: zshrc_link
+
+    - name: Assert zshrc symlink exists
+      ansible.builtin.assert:
+        that:
+          - zshrc_link.stat.exists
+          - zshrc_link.stat.islnk
+
+    - name: Check Nerd Font
+      ansible.builtin.stat:
+        path: ~/.local/share/fonts/DejaVuSansMNerdFontMono-Regular.ttf
+      register: font_file
+
+    - name: Assert Nerd Font exists
+      ansible.builtin.assert:
+        that: font_file.stat.exists

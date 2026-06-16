@@ -1,0 +1,15 @@
+---
+- name: Install dependencies (Arch Linux)
+  become: true
+  community.general.pacman:
+    name:
+      - zsh
+      - git
+      - fontconfig
+      - unzip
+    state: present
+    update_cache: true
+
+- name: Set zsh shell path
+  ansible.builtin.set_fact:
+    zsh_shell_path: /usr/bin/zsh

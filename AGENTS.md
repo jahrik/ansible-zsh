@@ -1,38 +1,39 @@
-# AGENTS.md
+# Agent Guide: jahrik.zsh
 
-This file provides guidance to AI coding agents when working with code in this repository.
+Install zsh and configure a minimal, dependency-free setup: aliases, exports,
+key bindings, functions, and a native powerline-style prompt using a bundled
+Nerd Font.
 
-## Role Overview
-
-Installs [Zsh](https://www.zsh.org/) and deploys a minimal, dependency-free shell environment to `~/.config/zsh/`: aliases, exports, key bindings, functions, and a native powerline-style prompt (directory + git branch segments, no theme framework). Installs a Nerd Font (DejaVu Sans Mono) for the prompt glyphs. Symlinks `~/.zshrc` and `~/.zshenv` to the config directory. Sets zsh as the default user shell.
-
-## Key Variables
+## Role Variables
 
 | Variable | Default | Description |
-|---|---|---|
-| `zsh.terminal` | `alacritty` | Value for `$TERM`/`$TERMINAL`/`$COLORTERM` |
-| `user` | connecting user (`ansible_facts['user_id']`) | User to set shell for |
-| `editor` | `vim` | Default `$EDITOR` |
-| `browser` | `chromium` | Default `$BROWSER` |
-| `lang` | `en_US.UTF-8` | Default `$LANG` |
-| `path` | `[~/bin]` | Extra entries for `$PATH` |
+|----------|---------|-------------|
+| `install` | `true` | Whether to install or uninstall the role. |
+| `zsh_steamos_version` | `"5.9.1-1"` | Pinned Arch package version for SteamOS extraction. |
+| `zsh.terminal` | `alacritty` | Terminal emulator to optimize for. |
+| `user` | `ansible_facts['user_id']` | Target user for home-dir configuration. |
+| `editor` | `vim` | Default editor. |
+| `browser` | `chromium` | Default browser. |
+| `lang` | `en_US.UTF-8` | System language. |
+| `path` | `['~/bin']` | List of additional PATH entries. |
 
 ## Task Flow
 
-- `tasks/main.yml` — updates package cache, installs git + zsh, creates `~/.config/zsh`, installs fontconfig/unzip and a Nerd Font into `~/.local/share/fonts` (triggers the `Fc-cache` handler), templates all config files, symlinks `~/.zshrc`/`~/.zshenv`, sets default shell
-- `templates/prompt.zsh.j2` — builds `PROMPT` from `vcs_info` directly; no oh-my-zsh or other prompt framework
-- `templates/zshrc.j2` sources `~/.config/zsh/local.zsh` if it exists — this role never templates secrets; that file is created by hand per-machine and is git-ignored (see `.gitignore`)
+- `tasks/main.yml`: Thin dispatcher based on `install` variable.
+- `tasks/install.yml`: OS detection and dispatching to OS-specific tasks, followed by shared configuration.
+- `tasks/uninstall.yml`: Removal of configuration and packages (best-effort).
+- OS-specific tasks: `archlinux.yml`, `debian.yml`, `darwin.yml`, `steamos.yml`.
 
-## Testing Commands
+## Testing
 
+Local linting:
 ```bash
-# Lint
 yamllint .
+ansible-lint
+```
 
-# Full molecule test (Arch container)
-molecule test
-
-# Iterative
-molecule converge
-molecule destroy
+Molecule testing:
+```bash
+molecule test               # Default scenario (Ubuntu, Arch)
+molecule test -s steamdeck  # SteamOS simulation
 ```

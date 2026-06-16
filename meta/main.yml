@@ -2,7 +2,7 @@ galaxy_info:
   role_name: zsh
   namespace: jahrik
   author: jahrik
-  description: Install zsh, oh-my-zsh, and configs
+  description: Install zsh and minimal configs
   company: https://homelab.business
   issue_tracker_url: https://github.com/jahrik/ansible-zsh/issues
   license: GPLv2
@@ -11,11 +11,25 @@ galaxy_info:
     - name: ArchLinux
       versions:
         - all
+    - name: Debian
+      versions:
+        - all
     - name: Ubuntu
       versions:
         - focal
+        - jammy
+        - noble
+    - name: macOS
+      versions:
+        - all
+    - name: GenericLinux
+      versions:
+        - all
   galaxy_tags:
     - zsh
-    - ohmyzsh
+    - shell
+    - steamdeck
+    - steamos
+    - powerline
 
 dependencies: []
