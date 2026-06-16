@@ -1,16 +1,18 @@
 # ansible-zsh
 
-Installs Zsh and deploys a clean, modular configuration using Powerlevel10k
-and Nerd Fonts. Supports Arch Linux, Debian/Ubuntu, macOS, and SteamOS
-(Steam Deck).
+Ansible role that installs Zsh with Powerlevel10k and Nerd Fonts. Deploys a
+minimal configuration to `~/.config/zsh/`. Supports Arch Linux, Debian/Ubuntu,
+macOS, and SteamOS (Steam Deck).
 
 ## Key Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `install` | `true` | Set to `false` to uninstall and remove all configuration. |
-| `zsh.terminal` | `alacritty` | Terminal emulator to optimize for. |
-| `user` | `ansible_facts['user_id']` | Target user for configuration. |
+| `editor` | `nvim` | Value of EDITOR env var. |
+| `lang` | `en_US.UTF-8` | Value of LANG env var. |
+| `python_force_color` | `1` | PY_COLORS env var (conditional). |
+| `ansible_force_color` | `1` | ANSIBLE_FORCE_COLOR env var (conditional). |
 
 ## Task Flow
 
@@ -21,7 +23,7 @@ and Nerd Fonts. Supports Arch Linux, Debian/Ubuntu, macOS, and SteamOS
 2. Include OS-specific tasks: `steamdeck.yml`, `archlinux.yml`, `debian.yml`, or `darwin.yml`.
 3. Create `~/.local/share/fonts`, download DejaVu Nerd Fonts, notify `Fc-cache`.
 4. Clone Powerlevel10k to `~/.local/share/zsh/powerlevel10k`.
-5. Template modular config files to `~/.config/zsh/`.
+5. Template config files to `~/.config/zsh/`.
 6. Symlink `.zshrc` and `.zshenv` to `$HOME`.
 
 **archlinux.yml:** pacman installs zsh, git, fontconfig, unzip.
@@ -41,28 +43,20 @@ and Nerd Fonts. Supports Arch Linux, Debian/Ubuntu, macOS, and SteamOS
 
 ```
 ~/.config/zsh/
-├── .zshrc                # Sources modular files and loads p10k
-├── .zshenv               # Sets ZDOTDIR and module_path
-├── .p10k.zsh             # Powerlevel10k classic style
-├── alias.zsh             # System aliases
-├── ansible.zsh           # Ansible colors and env
-├── export.zsh            # PATH and default apps
-├── functions.zsh         # Shell helpers
-├── keybindings.zsh       # Vim-style bindings
-└── local.zsh             # Untracked user overrides
+├── .zshrc          # History, completions, vi-mode, sources modules, loads p10k
+├── .zshenv         # Sets ZDOTDIR and SteamOS module_path
+├── .p10k.zsh      # Powerlevel10k (Python/AWS focused)
+├── export.zsh     # EDITOR, LANG, COLORTERM, color flags
+├── functions.zsh  # Shell helpers
+└── local.zsh      # Untracked machine-specific overrides
 ```
 
 ## Testing
 
-Local linting:
 ```bash
 uv run yamllint .
 uv run ansible-lint
-```
-
-Molecule testing:
-```bash
-uv run molecule test               # Default scenario (Ubuntu, Arch)
-uv run molecule test -s steamdeck  # SteamOS simulation
-uv run molecule test -s localhost  # Local machine (macOS/SteamOS/Linux)
+uv run molecule test -s localhost
+uv run molecule test
+uv run molecule test -s steamdeck
 ```
