@@ -52,7 +52,7 @@
   become: false
   ansible.builtin.template:
     src: "{{ item }}.j2"
-    dest: "~/.config/zsh/{{ item }}"
+    dest: "~/.config/zsh/{{ '.' if item in ['zshrc', 'zshenv'] else '' }}{{ item }}"
     mode: '0644'
   loop:
     - zshrc
@@ -69,7 +69,7 @@
 - name: Link zshrc and zshenv
   become: false
   ansible.builtin.file:
-    src: "~/.config/zsh/{{ item }}"
+    src: "~/.config/zsh/.{{ item }}"
     dest: "~/.{{ item }}"
     state: link
     force: true
