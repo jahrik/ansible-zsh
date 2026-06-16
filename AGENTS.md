@@ -1,7 +1,7 @@
 # Agent Guide: jahrik.zsh
 
 Install zsh and configure a minimal, dependency-free setup: aliases, exports,
-key bindings, functions, and a native powerline-style prompt using a bundled
+key bindings, functions, and the Powerlevel10k prompt using a bundled
 Nerd Font.
 
 ## Role Variables

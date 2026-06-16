@@ -3,8 +3,8 @@
 [![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
 
 Install zsh and configure a minimal, dependency-free setup: aliases, exports,
-key bindings, functions, and a native powerline-style prompt (directory +
-git branch segments) using a bundled Nerd Font — no oh-my-zsh.
+key bindings, functions, and the high-performance Powerlevel10k prompt
+using a bundled Nerd Font — no oh-my-zsh.
 
 ## Requirements
 
