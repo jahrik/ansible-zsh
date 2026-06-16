@@ -1,3 +1,14 @@
+# {{ ansible_managed }}
+
+# Set ZDOTDIR to keep home clean
+export ZDOTDIR=$HOME/.config/zsh
+
+# Set module_path so the home-dir binary can find its modules on SteamOS
+module_path=(
+  $HOME/.local/lib/zsh/$ZSH_VERSION
+  $module_path
+)
+
 typeset -U path
 path=(
   $path
