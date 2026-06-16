@@ -1,12 +1,6 @@
 ---
 install: true
-zsh:
-  terminal: alacritty
-user: "{{ ansible_facts['user_id'] }}"
-editor: vim
-browser: chromium
+editor: nvim
 lang: en_US.UTF-8
-path:
-  - ~/bin
 python_force_color: 1
 ansible_force_color: 1

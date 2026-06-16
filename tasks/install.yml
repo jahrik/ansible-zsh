@@ -66,12 +66,8 @@
     - zshrc
     - zshenv
     - p10k.zsh
-    - alias.zsh
     - export.zsh
     - functions.zsh
-    - keybindings.zsh
-    - python.zsh
-    - ansible.zsh
   tags: ["zsh"]
 
 - name: Link zshrc and zshenv

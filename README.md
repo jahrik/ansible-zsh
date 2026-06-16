@@ -2,7 +2,7 @@
 
 [![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
 
-Installs [Zsh](https://www.zsh.org/) and deploys a modular configuration to `~/.config/zsh/`. Sets up [Powerlevel10k](https://github.com/romkatv/powerlevel10k) for the prompt, configures shell environment variables, aliases, and keybindings, and installs [DejaVu Sans Mono Nerd Font](https://github.com/ryanoasis/nerd-fonts) for icon support. Does not rely on Oh My Zsh.
+Installs [Zsh](https://www.zsh.org/) with [Powerlevel10k](https://github.com/romkatv/powerlevel10k) and [DejaVu Sans Mono Nerd Font](https://github.com/ryanoasis/nerd-fonts). Deploys a minimal, modular configuration to `~/.config/zsh/`. Does not use Oh My Zsh.
 
 ## OS Support
 
@@ -13,77 +13,90 @@ Installs [Zsh](https://www.zsh.org/) and deploys a modular configuration to `~/.
 | macOS | Homebrew (`become: false` throughout) |
 | Steam Deck / SteamOS | Extracted binaries to `~/.local/` |
 
-Steam Deck is detected automatically via `/etc/steamos-release`. Because SteamOS has a read-only root filesystem, all tools are installed to the user's home directory without `sudo`. The latest Zsh version is resolved dynamically via the Arch Linux Package API and extracted directly from the archive.
+Steam Deck is detected automatically via `/etc/steamos-release`. Because SteamOS has a read-only root filesystem, all tools are installed to the user's home directory without `sudo`.
 
 ## Config Structure
 
 ```
 ~/.config/zsh/
-├── .zshrc                # Main entry point (sources all other files)
-├── .zshenv               # Environment vars (ZDOTDIR, module_path, PATH)
-├── .p10k.zsh             # Powerlevel10k theme configuration
-├── alias.zsh             # Custom aliases
-├── ansible.zsh           # Ansible-specific tweaks (force color, etc.)
-├── export.zsh            # Environment exports (EDITOR, BROWSER, etc.)
-├── functions.zsh         # Custom shell functions
-├── keybindings.zsh       # Vim-style navigation and search bindings
-├── python.zsh            # Python-specific setup (colors, etc.)
-└── local.zsh             # [Optional] Untracked machine-specific overrides
+├── .zshrc          # Entry point: history, completions, vi-mode, sources modules
+├── .zshenv         # Sets ZDOTDIR, SteamOS module_path
+├── .p10k.zsh      # Powerlevel10k prompt config
+├── export.zsh     # EDITOR, LANG, COLORTERM, color flags
+├── functions.zsh  # Shell helpers (man, docker, ssh, aws, etc.)
+└── local.zsh      # [Optional] Machine-specific overrides (not managed)
 ```
 
 ## Role Variables
 
 ```yaml
-install: true
-zsh:
-  terminal: alacritty
-user: "{{ ansible_facts['user_id'] }}"
-editor: vim
-browser: chromium
-lang: en_US.UTF-8
-path:
-  - ~/bin
-python_force_color: 1
-ansible_force_color: 1
+install: true         # Set to false to uninstall
+editor: nvim          # EDITOR env var
+lang: en_US.UTF-8    # LANG env var
+python_force_color: 1 # PY_COLORS env var
+ansible_force_color: 1 # ANSIBLE_FORCE_COLOR env var
 ```
 
-## Secrets and Local Overrides
+## Powerlevel10k
 
-This role does not template secrets. To set machine-specific environment variables (API keys, tokens, etc.), create `~/.config/zsh/local.zsh` manually. It is automatically sourced from `.zshrc` if present, and is ignored by git.
+Deploys a curated `.p10k.zsh` focused on Python and Data Engineering workflows. No interactive wizard needed.
+
+**Left prompt:** directory, git status
+**Right prompt:** exit status, command duration, background jobs, virtualenv, pyenv, aws, context (SSH only)
+
+The aws segment only appears when typing `aws`, `cdk`, or `sam`. It turns red when the profile name contains `prod`.
+
+### Customizing
+
+Run `p10k configure` to regenerate interactively, or put overrides in `local.zsh`:
+
+```bash
+typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=5
+```
+
+Note: re-running the Ansible role overwrites `.p10k.zsh`.
+
+## Shell Functions
+
+| Function | Description |
+|---|---|
+| `man` | Colored man pages |
+| `docker_inspect_env` | Show container environment variables |
+| `docker_inspect_ip` | Show container IP address |
+| `docker_shell` | Exec into a running container |
+| `ssh_quick` | Generate an ed25519 SSH key |
+| `aws_whoami` | Show current AWS caller identity |
+| `port` | Show what's listening on a port |
+| `jq_less` | Pipe JSON through jq with color paging |
+| `loadenv` | Export variables from a .env file |
+
+## Local Overrides
+
+Machine-specific config (Homebrew, PATH, aliases, secrets) goes in `~/.config/zsh/local.zsh`. This file is sourced last and is not managed by Ansible.
 
 ## Setting the Default Shell
 
-This role installs and configures Zsh but does not change the system's default login shell automatically.
+This role does not change the login shell automatically.
 
-### Linux / macOS
-Run the following command and enter your password when prompted:
 ```bash
-# On Linux (with Zsh in /usr/bin/zsh)
+# Linux
 sudo usermod -s /usr/bin/zsh $USER
 
-# On macOS (with Homebrew Zsh)
+# macOS (Homebrew Zsh)
 sudo chsh -s $(which zsh) $USER
 ```
 
-### Steam Deck (SteamOS)
-The safest approach on SteamOS is to let `bash` automatically switch to `zsh`, as this survives system updates without requiring changes to `/etc/passwd`. The role automatically adds the following block to your `~/.bashrc`:
-
-```bash
-if [ -f ~/.local/bin/zsh ]; then
-  export SHELL=~/.local/bin/zsh
-  exec ~/.local/bin/zsh -l
-fi
-```
+On Steam Deck, the role adds an auto-switch block to `~/.bashrc` instead.
 
 ## Testing
 
-Testing is managed with [uv](https://docs.astral.sh/uv/) and [Molecule](https://molecule.readthedocs.io/).
-
 ```bash
 uv sync
-uv run molecule test               # Default scenario (Ubuntu, Arch)
-uv run molecule test -s steamdeck  # SteamOS simulation
-uv run molecule test -s localhost  # Local machine (macOS CI runner)
+uv run yamllint .
+uv run ansible-lint
+uv run molecule test -s localhost   # Local machine
+uv run molecule test                # Default scenario (Ubuntu, Arch containers)
+uv run molecule test -s steamdeck   # SteamOS simulation
 ```
 
 ## Example Playbook

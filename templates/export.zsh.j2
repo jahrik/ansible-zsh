@@ -1,14 +1,13 @@
 #!/usr/bin/zsh
 
-# ENV
 export EDITOR={{ editor }}
-export BROWSER=/usr/bin/{{ browser }}
 export LANG={{ lang }}
 
-# Default w3m page
-export HTTP_HOME=www.google.com
+export COLORTERM=truecolor
 
-# Terminal
-export TERM={{ zsh.terminal }}
-export TERMINAL={{ zsh.terminal }}
-export COLORTERM={{ zsh.terminal }}
+{% if python_force_color is defined %}
+export PY_COLORS={{ python_force_color }}
+{% endif %}
+{% if ansible_force_color is defined %}
+export ANSIBLE_FORCE_COLOR={{ ansible_force_color }}
+{% endif %}
