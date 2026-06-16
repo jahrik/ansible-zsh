@@ -14,7 +14,7 @@
 
     - name: Check zshrc config
       ansible.builtin.stat:
-        path: ~/.config/zsh/zshrc
+        path: ~/.config/zsh/.zshrc
       register: zshrc_cfg
 
     - name: Assert zshrc exists
