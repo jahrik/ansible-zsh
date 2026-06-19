@@ -1,5 +1,7 @@
 ---
-collections:
+roles:
+  - name: jahrik.nerd_fonts
 
+collections:
   - name: community.general
     version: "10.0.0"

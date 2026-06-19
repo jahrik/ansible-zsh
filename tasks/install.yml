@@ -1,22 +1,19 @@
 ---
-- name: Detect SteamOS
-  ansible.builtin.stat:
-    path: /etc/steamos-release
-  register: steamos_release
-
 - name: Install (SteamOS)
   ansible.builtin.include_tasks: steamdeck.yml
-  when: steamos_release.stat.exists
+  when: ansible_distribution == 'SteamOS'
 
 - name: Install (Arch Linux)
   ansible.builtin.include_tasks: archlinux.yml
   when:
     - ansible_facts['os_family'] == 'Archlinux'
-    - not steamos_release.stat.exists
+    - ansible_distribution != 'SteamOS'
 
 - name: Install (Debian/Ubuntu)
   ansible.builtin.include_tasks: debian.yml
-  when: ansible_facts['os_family'] == 'Debian'
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - ansible_distribution != 'SteamOS'
 
 - name: Install (macOS)
   ansible.builtin.include_tasks: darwin.yml

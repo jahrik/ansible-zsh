@@ -21,6 +21,8 @@ jobs:
           python-version: '3.x'
       - name: Install test dependencies
         run: pip3 install yamllint ansible-lint
+      - name: Install Galaxy requirements
+        run: ansible-galaxy role install -r requirements.yml
       - name: Lint code
         run: yamllint .
       - name: Ansible lint
@@ -87,8 +89,8 @@ jobs:
       - name: Install dependencies
         run: pip3 install ansible
 
-      - name: Install requirements
-        run: ansible-galaxy install -r jahrik.zsh/molecule/localhost/requirements.yml -p ${{ github.workspace }}
+      - name: Install Galaxy requirements
+        run: ansible-galaxy install -r jahrik.zsh/requirements.yml -p ${{ github.workspace }}
 
       - name: Run converge
         working-directory: jahrik.zsh
