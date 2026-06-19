@@ -87,11 +87,9 @@ jobs:
       - name: Install dependencies
         run: pip3 install ansible
 
-      - name: Install collections
-        run: ansible-galaxy collection install community.general
-
-      - name: Install roles
-        run: ansible-galaxy role install jahrik.nerd_fonts
+      - name: Install requirements
+        working-directory: jahrik.zsh
+        run: ansible-galaxy install -r molecule/localhost/requirements.yml
 
       - name: Run converge
         working-directory: jahrik.zsh
