@@ -90,6 +90,9 @@ jobs:
       - name: Install collections
         run: ansible-galaxy collection install community.general
 
+      - name: Install roles
+        run: ansible-galaxy role install jahrik.nerd_fonts
+
       - name: Run converge
         working-directory: jahrik.zsh
         env:
