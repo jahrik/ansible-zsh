@@ -90,18 +90,18 @@ jobs:
         run: pip3 install ansible
 
       - name: Install Galaxy requirements
-        run: ansible-galaxy role install -r jahrik.zsh/requirements.yml
+        run: ansible-galaxy install -r jahrik.zsh/requirements.yml -p ${{ github.workspace }}
 
       - name: Run converge
         working-directory: jahrik.zsh
         env:
-          ANSIBLE_ROLES_PATH: ~/.ansible/roles
+          ANSIBLE_ROLES_PATH: ${{ github.workspace }}
         run: ansible-playbook molecule/localhost/converge.yml -i "localhost," -c local
 
       - name: Run verify
         working-directory: jahrik.zsh
         env:
-          ANSIBLE_ROLES_PATH: ~/.ansible/roles
+          ANSIBLE_ROLES_PATH: ${{ github.workspace }}
         run: ansible-playbook molecule/localhost/verify.yml -i "localhost," -c local
 
   release:
