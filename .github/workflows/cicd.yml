@@ -87,8 +87,8 @@ jobs:
       - name: Install dependencies
         run: pip3 install ansible
 
-      - name: Install collections
-        run: ansible-galaxy collection install community.general
+      - name: Install requirements
+        run: ansible-galaxy install -r jahrik.zsh/molecule/localhost/requirements.yml -p ${{ github.workspace }}
 
       - name: Run converge
         working-directory: jahrik.zsh

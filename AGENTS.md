@@ -21,10 +21,11 @@ macOS, and SteamOS (Steam Deck).
 **install.yml:**
 1. Detect SteamOS via `/etc/steamos-release`.
 2. Include OS-specific tasks: `steamdeck.yml`, `archlinux.yml`, `debian.yml`, or `darwin.yml`.
-3. Create `~/.local/share/fonts`, download DejaVu Nerd Fonts, notify `Fc-cache`.
-4. Clone Powerlevel10k to `~/.local/share/zsh/powerlevel10k`.
-5. Template config files to `~/.config/zsh/`.
-6. Symlink `.zshrc` and `.zshenv` to `$HOME`.
+3. Clone Powerlevel10k to `~/.local/share/zsh/powerlevel10k`.
+4. Template config files to `~/.config/zsh/`.
+5. Symlink `.zshrc` and `.zshenv` to `$HOME`.
+
+Nerd Fonts are installed by the `jahrik.nerd_fonts` role dependency (see `meta/main.yml`).
 
 **archlinux.yml:** pacman installs zsh, git, fontconfig, unzip.
 

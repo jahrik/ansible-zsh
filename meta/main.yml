@@ -33,4 +33,5 @@ galaxy_info:
     - steamos
     - powerline
 
-dependencies: []
+dependencies:
+  - role: jahrik.nerd_fonts
