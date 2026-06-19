@@ -21,6 +21,8 @@ jobs:
           python-version: '3.x'
       - name: Install test dependencies
         run: pip3 install yamllint ansible-lint
+      - name: Install Galaxy requirements
+        run: ansible-galaxy role install -r requirements.yml
       - name: Lint code
         run: yamllint .
       - name: Ansible lint
@@ -87,19 +89,19 @@ jobs:
       - name: Install dependencies
         run: pip3 install ansible
 
-      - name: Install requirements
-        run: ansible-galaxy install -r jahrik.zsh/molecule/localhost/requirements.yml -p ${{ github.workspace }}
+      - name: Install Galaxy requirements
+        run: ansible-galaxy role install -r jahrik.zsh/requirements.yml
 
       - name: Run converge
         working-directory: jahrik.zsh
         env:
-          ANSIBLE_ROLES_PATH: ${{ github.workspace }}
+          ANSIBLE_ROLES_PATH: ~/.ansible/roles
         run: ansible-playbook molecule/localhost/converge.yml -i "localhost," -c local
 
       - name: Run verify
         working-directory: jahrik.zsh
         env:
-          ANSIBLE_ROLES_PATH: ${{ github.workspace }}
+          ANSIBLE_ROLES_PATH: ~/.ansible/roles
         run: ansible-playbook molecule/localhost/verify.yml -i "localhost," -c local
 
   release:

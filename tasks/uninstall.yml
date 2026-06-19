@@ -1,9 +1,4 @@
 ---
-- name: Detect SteamOS
-  ansible.builtin.stat:
-    path: /etc/steamos-release
-  register: steamos_release
-
 - name: Remove zshrc and zshenv links
   become: false
   ansible.builtin.file:
@@ -21,7 +16,7 @@
 
 - name: Uninstall (SteamOS)
   become: false
-  when: steamos_release.stat.exists
+  when: ansible_distribution == 'SteamOS'
   block:
     - name: Remove zsh switch from .bashrc (SteamOS)
       ansible.builtin.blockinfile:
@@ -44,7 +39,7 @@
   ansible.builtin.file:
     path: "~/.local/share/zsh/powerlevel10k"
     state: absent
-  when: not steamos_release.stat.exists
+  when: ansible_distribution != 'SteamOS'
 
 - name: Uninstall (macOS)
   become: false
@@ -60,4 +55,4 @@
     state: absent
   when:
     - ansible_facts['os_family'] != 'Darwin'
-    - not steamos_release.stat.exists
+    - ansible_distribution != 'SteamOS'
