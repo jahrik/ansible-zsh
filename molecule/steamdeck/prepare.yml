@@ -21,7 +21,6 @@
         dest: /etc/os-release
         mode: "0644"
 
-
     - name: Install curl and unzip (simulate SteamOS)
       become: true
       community.general.pacman:
