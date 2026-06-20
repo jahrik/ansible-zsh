@@ -106,7 +106,7 @@ jobs:
 
   release:
     name: Release
-    needs: [molecule, macos]
+    needs: [molecule, steamdeck, macos]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
