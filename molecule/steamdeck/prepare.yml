@@ -3,6 +3,13 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Upgrade all packages to current
+      become: true
+      community.general.pacman:
+        upgrade: true
+        update_cache: true
+      changed_when: false
+
     - name: Remove /etc/arch-release to allow SteamOS detection
       become: true
       ansible.builtin.file:
@@ -28,4 +35,3 @@
           - curl
           - unzip
         state: present
-        update_cache: true
