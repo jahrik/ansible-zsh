@@ -11,6 +11,27 @@
     - name: Assert zsh is installed in ~/.local/bin
       ansible.builtin.assert:
         that: zsh_bin.stat.exists
+        fail_msg: "~/.local/bin/zsh not found"
+
+    - name: Run zsh --version from ~/.local/bin
+      ansible.builtin.command: ~/.local/bin/zsh --version
+      register: zsh_version
+      changed_when: false
+
+    - name: Assert zsh version output
+      ansible.builtin.assert:
+        that: "'zsh' in zsh_version.stdout"
+        fail_msg: "~/.local/bin/zsh --version did not produce expected output"
+
+    - name: Verify zsh runs a basic command
+      ansible.builtin.command: ~/.local/bin/zsh -c 'echo ok'
+      register: zsh_run
+      changed_when: false
+
+    - name: Assert zsh executed successfully
+      ansible.builtin.assert:
+        that: zsh_run.stdout == 'ok'
+        fail_msg: "zsh -c 'echo ok' did not return 'ok'"
 
     - name: Check zshrc config
       ansible.builtin.stat:
@@ -20,6 +41,7 @@
     - name: Assert zshrc exists
       ansible.builtin.assert:
         that: zshrc_cfg.stat.exists
+        fail_msg: "~/.config/zsh/.zshrc not found"
 
     - name: Check zshrc symlink
       ansible.builtin.stat:
@@ -31,6 +53,17 @@
         that:
           - zshrc_link.stat.exists
           - zshrc_link.stat.islnk
+        fail_msg: "~/.zshrc symlink not found"
+
+    - name: Check Powerlevel10k theme directory
+      ansible.builtin.stat:
+        path: ~/.local/share/zsh/powerlevel10k
+      register: p10k_dir
+
+    - name: Assert Powerlevel10k is installed
+      ansible.builtin.assert:
+        that: p10k_dir.stat.exists and p10k_dir.stat.isdir
+        fail_msg: "~/.local/share/zsh/powerlevel10k not found"
 
     - name: Check Nerd Font
       ansible.builtin.stat:
@@ -40,3 +73,4 @@
     - name: Assert Nerd Font exists
       ansible.builtin.assert:
         that: font_file.stat.exists
+        fail_msg: "~/.local/share/fonts/DejaVuSansMNerdFontMono-Regular.ttf not found"
