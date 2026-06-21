@@ -41,14 +41,3 @@
 - name: Set zsh shell path
   ansible.builtin.set_fact:
     zsh_shell_path: "{{ ansible_user_dir }}/.local/bin/zsh"
-
-- name: Add zsh switch to .bashrc (SteamOS)
-  become: false
-  ansible.builtin.blockinfile:
-    path: ~/.bashrc
-    marker: "# {mark} ANSIBLE MANAGED BLOCK: zsh-switch"
-    block: |
-      if [ -f ~/.local/bin/zsh ]; then
-        export SHELL=~/.local/bin/zsh
-        exec ~/.local/bin/zsh -l
-      fi

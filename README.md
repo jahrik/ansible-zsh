@@ -87,7 +87,24 @@ sudo usermod -s /usr/bin/zsh $USER
 sudo chsh -s $(which zsh) $USER
 ```
 
-On Steam Deck, the role adds an auto-switch block to `~/.bashrc` instead.
+### Steam Deck / SteamOS — do not use `chsh` or `exec zsh` in `.bashrc`
+
+SteamOS has a **read-only root filesystem** and a display manager (gamescope/SDDM) that sources the user's bash startup files during session initialization. Using `exec zsh` in `.bashrc` or changing the login shell to `~/.local/bin/zsh` via `chsh` will break login after a reboot for two reasons:
+
+1. **PAM rejects shells not in `/etc/shells`** — `~/.local/bin/zsh` is a user-local binary and cannot be added to the system-managed `/etc/shells`.
+2. **No fallback if zsh fails** — `exec` replaces the bash process entirely. If a SteamOS update changes glibc or shared libraries that the Arch-extracted zsh binary depends on, zsh will not start and the session will fail with no bash to recover from.
+
+**Safe alternative — configure your terminal emulator to launch zsh:**
+
+In Konsole: Settings → Edit Current Profile → Command → set to `~/.local/bin/zsh`
+
+Or launch it directly:
+
+```bash
+~/.local/bin/zsh
+```
+
+Your login shell stays `/bin/bash` (which SteamOS requires), but every new terminal window opens zsh.
 
 ## Testing
 

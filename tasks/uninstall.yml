@@ -18,12 +18,6 @@
   become: false
   when: ansible_distribution == 'SteamOS'
   block:
-    - name: Remove zsh switch from .bashrc (SteamOS)
-      ansible.builtin.blockinfile:
-        path: ~/.bashrc
-        marker: "# {mark} ANSIBLE MANAGED BLOCK: zsh-switch"
-        state: absent
-
     - name: Remove zsh artifacts (SteamOS)
       ansible.builtin.file:
         path: "{{ item }}"
