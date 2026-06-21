@@ -55,9 +55,17 @@ Nerd Fonts are installed by the `jahrik.nerd_fonts` role dependency (see `meta/m
 ## Testing
 
 ```bash
-uv run yamllint .
-uv run ansible-lint
-uv run molecule test -s localhost
-uv run molecule test
-uv run molecule test -s steamdeck
+yamllint .
+ansible-lint
+molecule test
+molecule test -s steamdeck
+molecule test -s localhost
 ```
+
+## CI
+
+- **Lint**: yamllint + ansible-lint
+- **Molecule**: Ubuntu 24.04 + Arch Linux via Docker (`molecule/default`)
+- **Steam Deck**: Arch container with SteamOS simulated (`molecule/steamdeck`)
+- **macOS**: `ansible-playbook` against the GHA `macos-latest` runner (`molecule/localhost`)
+- **Release**: publishes to Ansible Galaxy on merge to `main`

@@ -1,6 +1,7 @@
 # ansible-zsh
 
 [![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
+[![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-jahrik.zsh-blue?logo=ansible)](https://galaxy.ansible.com/ui/standalone/roles/jahrik/zsh/)
 
 Installs [Zsh](https://www.zsh.org/) with [Powerlevel10k](https://github.com/romkatv/powerlevel10k) and [DejaVu Sans Mono Nerd Font](https://github.com/ryanoasis/nerd-fonts). Deploys a minimal, modular configuration to `~/.config/zsh/`. Does not use Oh My Zsh.
 
@@ -91,12 +92,19 @@ On Steam Deck, the role adds an auto-switch block to `~/.bashrc` instead.
 ## Testing
 
 ```bash
-uv sync
-uv run yamllint .
-uv run ansible-lint
-uv run molecule test -s localhost   # Local machine
-uv run molecule test                # Default scenario (Ubuntu, Arch containers)
-uv run molecule test -s steamdeck   # SteamOS simulation
+yamllint .
+ansible-lint
+molecule test                 # Default scenario (Ubuntu, Arch containers)
+molecule test -s steamdeck    # SteamOS simulation
+molecule test -s localhost    # Local machine
+```
+
+Step by step:
+
+```bash
+molecule converge
+molecule verify
+molecule destroy
 ```
 
 ## Example Playbook
@@ -110,3 +118,7 @@ uv run molecule test -s steamdeck   # SteamOS simulation
 ## License
 
 GPLv2
+
+## Author Information
+
+jahrik@gmail.com
