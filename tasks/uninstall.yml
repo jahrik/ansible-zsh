@@ -16,14 +16,8 @@
 
 - name: Uninstall (SteamOS)
   become: false
-  when: ansible_distribution == 'SteamOS'
+  when: ansible_distribution_release == 'holo'
   block:
-    - name: Remove zsh switch from .bashrc (SteamOS)
-      ansible.builtin.blockinfile:
-        path: ~/.bashrc
-        marker: "# {mark} ANSIBLE MANAGED BLOCK: zsh-switch"
-        state: absent
-
     - name: Remove zsh artifacts (SteamOS)
       ansible.builtin.file:
         path: "{{ item }}"
@@ -39,7 +33,7 @@
   ansible.builtin.file:
     path: "~/.local/share/zsh/powerlevel10k"
     state: absent
-  when: ansible_distribution != 'SteamOS'
+  when: ansible_distribution_release != 'holo'
 
 - name: Uninstall (macOS)
   become: false
@@ -55,4 +49,4 @@
     state: absent
   when:
     - ansible_facts['os_family'] != 'Darwin'
-    - ansible_distribution != 'SteamOS'
+    - ansible_distribution_release != 'holo'

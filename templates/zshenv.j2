@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 export ZDOTDIR=$HOME/.config/zsh
-{% if ansible_distribution == 'SteamOS' %}
+{% if ansible_distribution_release == 'holo' %}
 
 module_path=(
   $HOME/.local/lib/zsh/$ZSH_VERSION

@@ -1,4 +1,10 @@
 ---
+- name: Update pacman cache (Arch Linux)
+  become: true
+  community.general.pacman:
+    update_cache: true
+  changed_when: false
+
 - name: Install dependencies (Arch Linux)
   become: true
   community.general.pacman:
@@ -8,7 +14,6 @@
       - fontconfig
       - unzip
     state: present
-    update_cache: true
 
 - name: Set zsh shell path
   ansible.builtin.set_fact:
