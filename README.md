@@ -92,6 +92,8 @@ On Steam Deck, the role adds an auto-switch block to `~/.bashrc` instead.
 ## Testing
 
 ```bash
+uv sync
+source .venv/bin/activate
 yamllint .
 ansible-lint
 molecule test                 # Default scenario (Ubuntu, Arch containers)
