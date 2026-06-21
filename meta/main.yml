@@ -7,7 +7,7 @@ galaxy_info:
   company: https://homelab.business
   issue_tracker_url: https://github.com/jahrik/ansible-zsh/issues
   license: GPLv2
-  min_ansible_version: '2.15'
+  min_ansible_version: '2.16'
   platforms:
     - name: ArchLinux
       versions:

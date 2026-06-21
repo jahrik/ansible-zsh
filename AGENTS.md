@@ -55,6 +55,8 @@ Nerd Fonts are installed by the `jahrik.nerd_fonts` role dependency (see `meta/m
 ## Testing
 
 ```bash
+uv sync
+source .venv/bin/activate
 yamllint .
 ansible-lint
 molecule test
