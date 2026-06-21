@@ -1,19 +1,19 @@
 ---
 - name: Install (SteamOS)
   ansible.builtin.include_tasks: steamdeck.yml
-  when: ansible_distribution == 'SteamOS'
+  when: ansible_distribution_release == 'holo'
 
 - name: Install (Arch Linux)
   ansible.builtin.include_tasks: archlinux.yml
   when:
     - ansible_facts['os_family'] == 'Archlinux'
-    - ansible_distribution != 'SteamOS'
+    - ansible_distribution_release != 'holo'
 
 - name: Install (Debian/Ubuntu)
   ansible.builtin.include_tasks: debian.yml
   when:
     - ansible_facts['os_family'] == 'Debian'
-    - ansible_distribution != 'SteamOS'
+    - ansible_distribution_release != 'holo'
 
 - name: Install (macOS)
   ansible.builtin.include_tasks: darwin.yml
