@@ -33,6 +33,7 @@
   ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git
     dest: "~/.local/share/zsh/powerlevel10k"
+    version: v1.9.1
     depth: 1
   tags: ["zsh", "theme"]
 

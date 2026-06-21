@@ -79,9 +79,12 @@ jobs:
       - name: Install test dependencies
         working-directory: jahrik.zsh
         run: uv sync
-      - name: Install Galaxy requirements
+      - name: Install Galaxy role requirements
         working-directory: jahrik.zsh
-        run: uv run ansible-galaxy install -r molecule/localhost/requirements.yml -p ${{ github.workspace }}
+        run: uv run ansible-galaxy role install -r molecule/localhost/requirements.yml -p ${{ github.workspace }}
+      - name: Install Galaxy collection requirements
+        working-directory: jahrik.zsh
+        run: uv run ansible-galaxy collection install -r molecule/localhost/requirements.yml
       - name: Run converge
         working-directory: jahrik.zsh
         env:
