@@ -16,17 +16,17 @@ jobs:
       - name: Check out the codebase
         uses: actions/checkout@v5
       - name: Set up Python 3
-        uses: actions/setup-python@v6
+        uses: astral-sh/setup-uv@v8.1.0
         with:
-          python-version: '3.x'
+          python-version: '3.12'
       - name: Install test dependencies
-        run: pip3 install yamllint ansible-lint
+        run: uv sync
       - name: Install Galaxy requirements
-        run: ansible-galaxy role install -r requirements.yml
+        run: uv run ansible-galaxy role install -r requirements.yml
       - name: Lint code
-        run: yamllint .
+        run: uv run yamllint .
       - name: Ansible lint
-        run: ansible-lint
+        run: uv run ansible-lint
 
   molecule:
     name: Molecule
@@ -34,40 +34,32 @@ jobs:
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v5
-
       - name: Set up Python 3
-        uses: actions/setup-python@v6
+        uses: astral-sh/setup-uv@v8.1.0
         with:
-          python-version: '3.x'
-
-      - name: Molecule
-        uses: gofrolist/molecule-action@v2
-        with:
-          molecule_command: test
-          molecule_args: -d docker
-          molecule_working_dir: .
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: uv sync
+      - name: Run Molecule
+        run: uv run molecule test
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
 
   steamdeck:
-    name: Steam Deck
+    name: Molecule (steamdeck)
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v5
-
       - name: Set up Python 3
-        uses: actions/setup-python@v6
+        uses: astral-sh/setup-uv@v8.1.0
         with:
-          python-version: '3.x'
-
-      - name: Molecule
-        uses: gofrolist/molecule-action@v2
-        with:
-          molecule_command: test
-          molecule_args: -d docker -s steamdeck
-          molecule_working_dir: .
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: uv sync
+      - name: Run Molecule
+        run: uv run molecule test -s steamdeck
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -80,33 +72,33 @@ jobs:
         uses: actions/checkout@v5
         with:
           path: jahrik.zsh
-
       - name: Set up Python 3
-        uses: actions/setup-python@v6
+        uses: astral-sh/setup-uv@v8.1.0
         with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: pip3 install ansible
-
-      - name: Install Galaxy requirements
-        run: ansible-galaxy install -r jahrik.zsh/requirements.yml -p ${{ github.workspace }}
-
+          python-version: '3.12'
+      - name: Install test dependencies
+        working-directory: jahrik.zsh
+        run: uv sync
+      - name: Install Galaxy role requirements
+        working-directory: jahrik.zsh
+        run: uv run ansible-galaxy role install -r molecule/localhost/requirements.yml -p ${{ github.workspace }}
+      - name: Install Galaxy collection requirements
+        working-directory: jahrik.zsh
+        run: uv run ansible-galaxy collection install -r molecule/localhost/requirements.yml
       - name: Run converge
         working-directory: jahrik.zsh
         env:
           ANSIBLE_ROLES_PATH: ${{ github.workspace }}
-        run: ansible-playbook molecule/localhost/converge.yml -i "localhost," -c local
-
+        run: uv run ansible-playbook molecule/localhost/converge.yml -i "localhost," -c local
       - name: Run verify
         working-directory: jahrik.zsh
         env:
           ANSIBLE_ROLES_PATH: ${{ github.workspace }}
-        run: ansible-playbook molecule/localhost/verify.yml -i "localhost," -c local
+        run: uv run ansible-playbook molecule/localhost/verify.yml -i "localhost," -c local
 
   release:
     name: Release
-    needs: [molecule, macos]
+    needs: [lint, molecule, steamdeck, macos]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
