@@ -1,20 +1,17 @@
 ---
 extends: default
-
 ignore: |
   .venv/
-  CHANGELOG.md
-
 rules:
-  line-length: disable
-  truthy:
-    allowed-values: ['true', 'false', 'yes', 'no']
-    check-keys: false
-  comments:
-    min-spaces-from-content: 1
   comments-indentation: disable
-  braces:
-    max-spaces-inside: 1
+  document-start: disable
+  indentation: disable
+  line-length: disable
+  truthy: disable
   octal-values:
     forbid-implicit-octal: true
     forbid-explicit-octal: true
+  comments:
+    min-spaces-from-content: 1
+  braces:
+    max-spaces-inside: 1

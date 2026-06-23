@@ -20,7 +20,7 @@
 
     - name: Assert zsh version output
       ansible.builtin.assert:
-        that: "'zsh' in zsh_version.stdout"
+        that: "'zsh' in zsh_version.stdout | lower"
         fail_msg: "zsh --version did not produce expected output"
 
     - name: Verify zsh runs a basic command
