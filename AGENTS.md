@@ -1,55 +1,36 @@
-# ansible-zsh
+# AGENTS.md
 
-Ansible role that installs Zsh with Powerlevel10k and Nerd Fonts. Deploys a
-minimal configuration to `~/.config/zsh/`. Supports Arch Linux, Debian/Ubuntu,
-macOS, and SteamOS (Steam Deck).
-
-## Key Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `install` | `true` | Set to `false` to uninstall and remove all configuration. |
-| `editor` | `nvim` | Value of EDITOR env var. |
-| `lang` | `en_US.UTF-8` | Value of LANG env var. |
-| `python_force_color` | `1` | PY_COLORS env var (conditional). |
-| `ansible_force_color` | `1` | ANSIBLE_FORCE_COLOR env var (conditional). |
+Ansible role that installs Zsh, Powerlevel10k, and Nerd Fonts with a modular `~/.config/zsh/` setup. Supports Arch Linux, Debian/Ubuntu, macOS, and SteamOS (Steam Deck).
 
 ## Task Flow
 
-`tasks/main.yml` -> `install.yml` or `uninstall.yml` based on `install | bool`
+`tasks/main.yml` delegates to OS-specific playbooks based on `ansible_os_family` and `install` flag.
 
-**install.yml:**
-1. Detect SteamOS via `/etc/steamos-release`.
-2. Include OS-specific tasks: `steamdeck.yml`, `archlinux.yml`, `debian.yml`, or `darwin.yml`.
-3. Clone Powerlevel10k to `~/.local/share/zsh/powerlevel10k`.
-4. Template config files to `~/.config/zsh/`.
-5. Symlink `.zshrc` and `.zshenv` to `$HOME`.
+- **Steam Deck (`steamdeck.yml`)**: Root is read-only. Downloads the Arch Linux binary, extracts to `~/.local/`, and manages aliases.
+- **macOS (`darwin.yml`)**: Uses Homebrew (`become: false`).
+- **Linux (`archlinux.yml`, `debian.yml`)**: Uses native package managers (`pacman`, `apt`) to install zsh, git, fontconfig, unzip.
+- **Uninstall (`uninstall.yml`)**: Removes Zsh files, `.config/zsh` directory, and restores `.bashrc`.
 
-Nerd Fonts are installed by the `jahrik.nerd_fonts` role dependency (see `meta/main.yml`).
+## Role Variables
 
-**archlinux.yml:** pacman installs zsh, git, fontconfig, unzip.
-
-**debian.yml:** apt installs zsh, git, fontconfig, unzip.
-
-**darwin.yml:** Homebrew installs zsh, git (`become: false` throughout).
-
-**steamdeck.yml:** All tasks run without `become` (root is read-only).
-- Resolves latest zsh version via Arch Linux Package API.
-- Extracts package from Arch Archive to `~/.local/`.
-- Adds automatic zsh-switch block to `~/.bashrc`.
-
-**uninstall.yml:** Removes Zsh artifacts, configuration, and restores `.bashrc`.
+| Variable | Default | Description |
+|---|---|---|
+| `install` | `true` | Set to `false` to uninstall. |
+| `editor` | `nvim` | Sets `$EDITOR`. |
+| `lang` | `en_US.UTF-8` | Sets `$LANG`. |
+| `python_force_color` | `1` | Forces Python colored output. |
+| `ansible_force_color`| `1` | Forces Ansible colored output. |
 
 ## Config Structure
 
-```
+```text
 ~/.config/zsh/
-├── .zshrc          # History, completions, vi-mode, sources modules, loads p10k
-├── .zshenv         # Sets ZDOTDIR and SteamOS module_path
-├── .p10k.zsh      # Powerlevel10k (Python/AWS focused)
-├── export.zsh     # EDITOR, LANG, COLORTERM, color flags
-├── functions.zsh  # Shell helpers
-└── local.zsh      # Untracked machine-specific overrides
+├── .zshrc          # Main entry point: history, vi-mode, modules
+├── .zshenv         # ZDOTDIR setup
+├── .p10k.zsh       # Powerlevel10k theme
+├── export.zsh      # Environment variables
+├── functions.zsh   # Custom shell functions
+└── local.zsh       # Untracked machine-specific overrides
 ```
 
 ## Testing
@@ -60,6 +41,13 @@ source .venv/bin/activate
 yamllint .
 ansible-lint
 molecule test
+```
+
+### Examples
+
+Test specific scenarios locally:
+
+```bash
 molecule test -s steamdeck
 molecule test -s localhost
 ```
@@ -67,7 +55,5 @@ molecule test -s localhost
 ## CI
 
 - **Lint**: yamllint + ansible-lint
-- **Molecule**: Ubuntu 24.04 + Arch Linux via Docker (`molecule/default`)
-- **Steam Deck**: Arch container with SteamOS simulated (`molecule/steamdeck`)
-- **macOS**: `ansible-playbook` against the GHA `macos-latest` runner (`molecule/localhost`)
-- **Release**: publishes to Ansible Galaxy on merge to `main`
+- **Molecule**: Default (Ubuntu/Arch containers), Steamdeck (Arch container), macOS (GHA macOS runner)
+- **Release**: Publishes to Ansible Galaxy on merge to `main`

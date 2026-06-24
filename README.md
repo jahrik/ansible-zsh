@@ -3,108 +3,62 @@
 [![CICD](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml/badge.svg)](https://github.com/jahrik/ansible-zsh/actions/workflows/cicd.yml)
 [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-jahrik.zsh-blue?logo=ansible)](https://galaxy.ansible.com/ui/standalone/roles/jahrik/zsh/)
 
-Installs [Zsh](https://www.zsh.org/) with [Powerlevel10k](https://github.com/romkatv/powerlevel10k) and [DejaVu Sans Mono Nerd Font](https://github.com/ryanoasis/nerd-fonts). Deploys a minimal, modular configuration to `~/.config/zsh/`. Does not use Oh My Zsh.
+Installs [Zsh](https://www.zsh.org/), [Powerlevel10k](https://github.com/romkatv/powerlevel10k), and [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts). Configures Zsh modularly in `~/.config/zsh/`. Does not use Oh My Zsh.
 
 ## OS Support
 
-| Platform | Install method |
+| Platform | Install Method |
 |---|---|
 | Arch Linux | `pacman` |
 | Ubuntu / Debian | `apt` |
-| macOS | Homebrew (`become: false` throughout) |
+| macOS | Homebrew |
 | Steam Deck / SteamOS | Extracted binaries to `~/.local/` |
 
-Steam Deck is detected automatically via `/etc/steamos-release`. Because SteamOS has a read-only root filesystem, all tools are installed to the user's home directory without `sudo`.
+## Usage
 
-## Config Structure
+**Install role:**
 
-```
-~/.config/zsh/
-├── .zshrc          # Entry point: history, completions, vi-mode, sources modules
-├── .zshenv         # Sets ZDOTDIR, SteamOS module_path
-├── .p10k.zsh      # Powerlevel10k prompt config
-├── export.zsh     # EDITOR, LANG, COLORTERM, color flags
-├── functions.zsh  # Shell helpers (man, docker, ssh, aws, etc.)
-└── local.zsh      # [Optional] Machine-specific overrides (not managed)
+```bash
+ansible-galaxy install jahrik.zsh
 ```
 
-## Role Variables
+**Example Playbook:**
 
 ```yaml
-install: true         # Set to false to uninstall
-editor: nvim          # EDITOR env var
-lang: en_US.UTF-8    # LANG env var
-python_force_color: 1 # PY_COLORS env var
-ansible_force_color: 1 # ANSIBLE_FORCE_COLOR env var
+- hosts: localhost
+  roles:
+    - { role: jahrik.zsh, install: true, editor: nvim }
 ```
 
-## Powerlevel10k
+### Role Variables
 
-Deploys a curated `.p10k.zsh` focused on Python and Data Engineering workflows. No interactive wizard needed.
+| Variable | Default | Description |
+|---|---|---|
+| `install` | `true` | Set to `false` to uninstall. |
+| `editor` | `nvim` | Sets `$EDITOR`. |
+| `lang` | `en_US.UTF-8` | Sets `$LANG`. |
+| `python_force_color` | `1` | Forces Python colored output. |
+| `ansible_force_color`| `1` | Forces Ansible colored output. |
 
-**Left prompt:** directory, git status
-**Right prompt:** exit status, command duration, background jobs, virtualenv, pyenv, aws, context (SSH only)
+## Configuration
 
-The aws segment only appears when typing `aws`, `cdk`, or `sam`. It turns red when the profile name contains `prod`.
+The setup uses `~/.config/zsh/` rather than the home directory for better organization.
 
-### Customizing
-
-Run `p10k configure` to regenerate interactively, or put overrides in `local.zsh`:
-
-```bash
-typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=5
+```text
+~/.config/zsh/
+├── .zshrc          # Entry point
+├── .zshenv         # Sets ZDOTDIR
+├── .p10k.zsh       # Powerlevel10k config
+├── export.zsh      # Environment exports
+├── functions.zsh   # Helpers (docker, aws, etc.)
+└── local.zsh       # Optional, unmanaged machine-specific overrides
 ```
 
-Note: re-running the Ansible role overwrites `.p10k.zsh`.
+### Steam Deck Notes
 
-## Shell Functions
-
-| Function | Description |
-|---|---|
-| `man` | Colored man pages |
-| `docker_inspect_env` | Show container environment variables |
-| `docker_inspect_ip` | Show container IP address |
-| `docker_shell` | Exec into a running container |
-| `ssh_quick` | Generate an ed25519 SSH key |
-| `aws_whoami` | Show current AWS caller identity |
-| `port` | Show what's listening on a port |
-| `jq_less` | Pipe JSON through jq with color paging |
-| `loadenv` | Export variables from a .env file |
-
-## Local Overrides
-
-Machine-specific config (Homebrew, PATH, aliases, secrets) goes in `~/.config/zsh/local.zsh`. This file is sourced last and is not managed by Ansible.
-
-## Setting the Default Shell
-
-This role does not change the login shell automatically.
-
-```bash
-# Linux
-sudo usermod -s /usr/bin/zsh $USER
-
-# macOS (Homebrew Zsh)
-sudo chsh -s $(which zsh) $USER
-```
-
-### Steam Deck / SteamOS — do not use `chsh` or `exec zsh` in `.bashrc`
-
-SteamOS has a **read-only root filesystem** and a display manager (gamescope/SDDM) that sources the user's bash startup files during session initialization. Using `exec zsh` in `.bashrc` or changing the login shell to `~/.local/bin/zsh` via `chsh` will break login after a reboot for two reasons:
-
-1. **PAM rejects shells not in `/etc/shells`** — `~/.local/bin/zsh` is a user-local binary and cannot be added to the system-managed `/etc/shells`.
-2. **No fallback if zsh fails** — `exec` replaces the bash process entirely. If a SteamOS update changes glibc or shared libraries that the Arch-extracted zsh binary depends on, zsh will not start and the session will fail with no bash to recover from.
-
-**Safe alternative — configure your terminal emulator to launch zsh:**
-
-In Konsole: Settings → Edit Current Profile → Command → set to `~/.local/bin/zsh`
-
-Or launch it directly:
-
-```bash
-~/.local/bin/zsh
-```
-
-Your login shell stays `/bin/bash` (which SteamOS requires), but every new terminal window opens zsh.
+SteamOS has a read-only root. This role installs zsh binaries to `~/.local/bin/zsh` without `sudo`.
+Do not change your login shell to a local binary, it may break SteamOS login.
+Instead, configure your terminal emulator (e.g. Konsole) to run `~/.local/bin/zsh` automatically.
 
 ## Testing
 
@@ -113,25 +67,24 @@ uv sync
 source .venv/bin/activate
 yamllint .
 ansible-lint
-molecule test                 # Default scenario (Ubuntu, Arch containers)
-molecule test -s steamdeck    # SteamOS simulation
-molecule test -s localhost    # Local machine
+molecule test
 ```
 
-Step by step:
+### Examples
+
+Run specific Molecule scenarios:
+
+```bash
+molecule test -s steamdeck
+molecule test -s localhost
+```
+
+Step-by-step Molecule execution:
 
 ```bash
 molecule converge
 molecule verify
 molecule destroy
-```
-
-## Example Playbook
-
-```yaml
-- hosts: local
-  roles:
-    - { role: jahrik.zsh }
 ```
 
 ## License
