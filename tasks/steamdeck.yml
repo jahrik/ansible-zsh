@@ -40,4 +40,4 @@
 
 - name: Set zsh shell path
   ansible.builtin.set_fact:
-    zsh_shell_path: "{{ ansible_user_dir }}/.local/bin/zsh"
+    zsh_shell_path: "{{ ansible_facts['user_dir'] }}/.local/bin/zsh"

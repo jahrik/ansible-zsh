@@ -8,7 +8,7 @@ platforms:
 provisioner:
   name: ansible
   inventory:
-    hosts:
+    host_vars:
       localhost:
         ansible_connection: local
 verifier:

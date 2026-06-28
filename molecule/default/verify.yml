@@ -35,7 +35,7 @@
 
     - name: Check ~/.config/zsh directory
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.config/zsh"
+        path: "{{ ansible_facts['env']['HOME'] }}/.config/zsh"
       register: zsh_dir
 
     - name: Assert ~/.config/zsh directory exists
@@ -45,7 +45,7 @@
 
     - name: Check ~/.config/zsh/.zshrc
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.config/zsh/.zshrc"
+        path: "{{ ansible_facts['env']['HOME'] }}/.config/zsh/.zshrc"
       register: zshrc_source
 
     - name: Assert ~/.config/zsh/.zshrc exists
@@ -55,7 +55,7 @@
 
     - name: Check ~/.zshrc symlink
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.zshrc"
+        path: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
       register: zshrc
 
     - name: Assert ~/.zshrc exists
@@ -65,7 +65,7 @@
 
     - name: Check Powerlevel10k theme directory
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.local/share/zsh/powerlevel10k"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/share/zsh/powerlevel10k"
       register: p10k_dir
 
     - name: Assert Powerlevel10k is installed
@@ -75,7 +75,7 @@
 
     - name: Check Nerd Font installed
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.local/share/fonts/DejaVuSansMNerdFontMono-Regular.ttf"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/share/fonts/DejaVuSansMNerdFontMono-Regular.ttf"
       register: nerd_font
 
     - name: Assert Nerd Font is installed
