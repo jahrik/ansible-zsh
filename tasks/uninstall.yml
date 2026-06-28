@@ -16,7 +16,7 @@
 
 - name: Uninstall (SteamOS)
   become: false
-  when: ansible_distribution_release == 'holo'
+  when: ansible_facts['distribution_release'] == 'holo'
   block:
     - name: Remove zsh artifacts (SteamOS)
       ansible.builtin.file:
@@ -33,7 +33,7 @@
   ansible.builtin.file:
     path: "~/.local/share/zsh/powerlevel10k"
     state: absent
-  when: ansible_distribution_release != 'holo'
+  when: ansible_facts['distribution_release'] != 'holo'
 
 - name: Uninstall (macOS)
   become: false
@@ -49,4 +49,4 @@
     state: absent
   when:
     - ansible_facts['os_family'] != 'Darwin'
-    - ansible_distribution_release != 'holo'
+    - ansible_facts['distribution_release'] != 'holo'
