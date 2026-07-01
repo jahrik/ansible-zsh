@@ -82,3 +82,54 @@
       ansible.builtin.assert:
         that: nerd_font.stat.exists
         fail_msg: "Nerd Font not found at ~/.local/share/fonts"
+
+- name: Verify uninstall
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Run jahrik.zsh with install false
+      ansible.builtin.include_role:
+        name: jahrik.zsh
+      vars:
+        install: false
+
+    - name: Check zsh --version still works
+      ansible.builtin.command: zsh --version
+      register: zsh_version_after_uninstall
+      changed_when: false
+      failed_when: false
+
+    - name: Assert zsh binary is removed
+      ansible.builtin.assert:
+        that: zsh_version_after_uninstall.rc != 0
+        fail_msg: "zsh --version still succeeded after uninstall"
+
+    - name: Check ~/.config/zsh directory removed
+      ansible.builtin.stat:
+        path: "{{ ansible_facts['env']['HOME'] }}/.config/zsh"
+      register: zsh_dir_removed
+
+    - name: Assert ~/.config/zsh directory is removed
+      ansible.builtin.assert:
+        that: not zsh_dir_removed.stat.exists
+        fail_msg: "~/.config/zsh directory still present after uninstall"
+
+    - name: Check ~/.zshrc symlink removed
+      ansible.builtin.stat:
+        path: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
+      register: zshrc_removed
+
+    - name: Assert ~/.zshrc is removed
+      ansible.builtin.assert:
+        that: not zshrc_removed.stat.exists
+        fail_msg: "~/.zshrc still present after uninstall"
+
+    - name: Check Powerlevel10k theme directory removed
+      ansible.builtin.stat:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/share/zsh/powerlevel10k"
+      register: p10k_dir_removed
+
+    - name: Assert Powerlevel10k is removed
+      ansible.builtin.assert:
+        that: not p10k_dir_removed.stat.exists
+        fail_msg: "~/.local/share/zsh/powerlevel10k still present after uninstall"

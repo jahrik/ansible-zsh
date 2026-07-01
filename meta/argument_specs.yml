@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure Zsh with Powerlevel10k
+    options:
+      install:
+        type: bool
+        default: true
+        description: Set to false to uninstall Zsh and remove its config
+      editor:
+        type: str
+        default: nvim
+        description: Sets $EDITOR in the generated config
+      lang:
+        type: str
+        default: en_US.UTF-8
+        description: Sets $LANG in the generated config
+      python_force_color:
+        type: int
+        default: 1
+        description: Forces Python colored output
+      ansible_force_color:
+        type: int
+        default: 1
+        description: Forces Ansible colored output
