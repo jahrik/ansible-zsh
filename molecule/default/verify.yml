@@ -93,7 +93,7 @@
       vars:
         install: false
 
-    - name: Check zsh --version still works
+    - name: Probe zsh --version (expected to fail after uninstall)
       ansible.builtin.command: zsh --version
       register: zsh_version_after_uninstall
       changed_when: false
