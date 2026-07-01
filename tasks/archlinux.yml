@@ -13,7 +13,6 @@
       - git
       - fontconfig
       - unzip
-    state: present
 
 - name: Set zsh shell path
   ansible.builtin.set_fact:
