@@ -60,6 +60,21 @@ SteamOS has a read-only root. This role installs zsh binaries to `~/.local/bin/z
 Do not change your login shell to a local binary, it may break SteamOS login.
 Instead, configure your terminal emulator (e.g. Konsole) to run `~/.local/bin/zsh` automatically.
 
+## Tags
+
+Run or skip parts of the role with tags:
+
+```bash
+ansible-playbook playbook.yml --tags zsh:install
+ansible-playbook playbook.yml --skip-tags zsh:uninstall
+```
+
+| Tag | Scope |
+|---|---|
+| `zsh` | All role tasks |
+| `zsh:install` | Install path only |
+| `zsh:uninstall` | Uninstall path only |
+
 ## Testing
 
 ```bash

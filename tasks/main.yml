@@ -1,8 +1,24 @@
 ---
 - name: Install zsh
-  ansible.builtin.include_tasks: install.yml
+  ansible.builtin.include_tasks:
+    file: install.yml
+    apply:
+      tags:
+        - zsh
+        - zsh:install
   when: install | default(true) | bool
+  tags:
+    - zsh
+    - zsh:install
 
 - name: Uninstall zsh
-  ansible.builtin.include_tasks: uninstall.yml
-  when: not install | default(true) | bool
+  ansible.builtin.include_tasks:
+    file: uninstall.yml
+    apply:
+      tags:
+        - zsh
+        - zsh:uninstall
+  when: not (install | default(true) | bool)
+  tags:
+    - zsh
+    - zsh:uninstall
